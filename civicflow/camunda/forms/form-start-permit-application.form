@@ -1,0 +1,111 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.8.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.49.0"
+  },
+  "schemaVersion": 18,
+  "id": "form-start-permit-application",
+  "type": "default",
+  "components": [
+    {
+      "id": "Text_StartHeader",
+      "type": "text",
+      "text": "# Municipal Corporation - New Permit Application\n### Initiate Statutory Approval Process in Camunda 8\nEnter or verify the initial application parameters to launch the workflow."
+    },
+    {
+      "id": "Field_AppNumber",
+      "key": "applicationNumber",
+      "label": "Application Reference Number",
+      "type": "textfield",
+      "defaultValue": "BLD-2026-0001",
+      "validate": { "required": true },
+      "layout": { "row": "Row_1", "columns": 6 }
+    },
+    {
+      "id": "Field_AppId",
+      "key": "applicationId",
+      "label": "Application Database ID",
+      "type": "number",
+      "defaultValue": 1,
+      "validate": { "required": true },
+      "layout": { "row": "Row_1", "columns": 6 }
+    },
+    {
+      "id": "Field_ApplicantName",
+      "key": "applicantName",
+      "label": "Applicant / Architect Name",
+      "type": "textfield",
+      "defaultValue": "Rahul Sharma",
+      "validate": { "required": true },
+      "layout": { "row": "Row_2", "columns": 6 }
+    },
+    {
+      "id": "Field_ApplicantEmail",
+      "key": "applicantEmail",
+      "label": "Applicant Email",
+      "type": "textfield",
+      "defaultValue": "rahul.sharma@example.com",
+      "validate": { "required": true },
+      "layout": { "row": "Row_2", "columns": 6 }
+    },
+    {
+      "id": "Field_SurveyNumber",
+      "key": "surveyNumber",
+      "label": "Land Survey Number (GIS Verified)",
+      "type": "textfield",
+      "defaultValue": "SN-4509/A",
+      "validate": { "required": true },
+      "layout": { "row": "Row_3", "columns": 4 }
+    },
+    {
+      "id": "Field_BuildingType",
+      "key": "buildingType",
+      "label": "Building Category",
+      "type": "select",
+      "defaultValue": "COMMERCIAL",
+      "validate": { "required": true },
+      "values": [
+        { "label": "Residential", "value": "RESIDENTIAL" },
+        { "label": "Commercial", "value": "COMMERCIAL" },
+        { "label": "Industrial", "value": "INDUSTRIAL" }
+      ],
+      "layout": { "row": "Row_3", "columns": 4 }
+    },
+    {
+      "id": "Field_Floors",
+      "key": "floors",
+      "label": "Number of Floors",
+      "type": "number",
+      "defaultValue": 4,
+      "validate": { "required": true },
+      "layout": { "row": "Row_3", "columns": 4 }
+    },
+    {
+      "id": "Field_PlotArea",
+      "key": "plotArea",
+      "label": "Plot Area (sq.ft.)",
+      "type": "number",
+      "defaultValue": 15000,
+      "validate": { "required": true },
+      "layout": { "row": "Row_4", "columns": 6 }
+    },
+    {
+      "id": "Field_BuiltUpArea",
+      "key": "proposedBuiltUpArea",
+      "label": "Proposed Built-Up Area (sq.ft.)",
+      "type": "number",
+      "defaultValue": 8500,
+      "validate": { "required": true },
+      "layout": { "row": "Row_4", "columns": 6 }
+    },
+    {
+      "id": "Field_DocsValid",
+      "key": "documentsValid",
+      "label": "Documents Pre-Verified (Blueprints, Land Deed, Structural Cert present)",
+      "type": "checkbox",
+      "defaultValue": true
+    }
+  ]
+}

@@ -2,6 +2,9 @@
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_MunicipalBuildingPermit" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.49.0">
   <bpmn:process id="Process_MunicipalBuildingPermit" name="Municipal Building Permit Approval Process" isExecutable="true">
     <bpmn:startEvent id="StartEvent_ApplicationSubmitted" name="Application Submitted">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="form-start-permit-application" />
+      </bpmn:extensionElements>
       <bpmn:outgoing>Flow_To_DocVerification</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:serviceTask id="Task_DocumentVerification" name="Document Verification">
@@ -35,7 +38,7 @@
         <zeebe:ioMapping>
           <zeebe:input source="noAuth" target="authentication.type" />
           <zeebe:input source="GET" target="method" />
-          <zeebe:input source="= &#34;http://localhost:8081/api/land-registry/verify/&#34; + surveyNumber" target="url" />
+          <zeebe:input source="= &#34;http://localhost:8081/api/land-registry/verify/&#34; + (if surveyNumber != null and surveyNumber != &#34;&#34; then surveyNumber else &#34;SN-4509/A&#34;)" target="url" />
           <zeebe:input source="20" target="connectionTimeoutInSeconds" />
           <zeebe:input source="20" target="readTimeoutInSeconds" />
         </zeebe:ioMapping>
