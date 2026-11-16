@@ -17,11 +17,25 @@ public class MockLandRegistryService {
     @Builder
     public static class LandVerificationResult {
         private String surveyNumber;
+        @com.fasterxml.jackson.annotation.JsonProperty("valid")
         private boolean isValid;
         private String ownershipStatus;
         private String registeredOwner;
         private String zoningCategory;
         private String message;
+
+        public boolean isValid() {
+            return isValid;
+        }
+
+        public boolean getValid() {
+            return isValid;
+        }
+
+        @com.fasterxml.jackson.annotation.JsonProperty("landRegistryValid")
+        public boolean isLandRegistryValid() {
+            return isValid;
+        }
     }
 
     public LandVerificationResult verifySurveyNumber(String surveyNumber) {

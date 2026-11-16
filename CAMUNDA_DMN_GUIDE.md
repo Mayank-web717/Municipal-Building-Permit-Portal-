@@ -132,3 +132,4 @@ In Camunda 8, DMN evaluation does **NOT** require a separate worker or external 
    - `decision-review-evaluation`
    - `decision-permit-fee-matrix`
 4. Click on any decision instance to view the **Decision Audit Trail**, showing exactly which inputs were provided, which rule fired, and the resulting output!
+

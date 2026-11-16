@@ -5,11 +5,11 @@ import com.civicflow.repository.ApplicationRepository;
 import com.civicflow.service.FeeCalculationService;
 import com.civicflow.service.NotificationAndAuditService;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -21,7 +21,6 @@ public class FeeCalculationWorker {
     private final FeeCalculationService feeCalculationService;
     private final NotificationAndAuditService auditService;
 
-    @JobWorker(type = "fee-calculation-worker", autoComplete = true)
     public Map<String, Object> calculateFee(final ActivatedJob job) {
         Object appObj = job.getVariablesAsMap().get("applicationId");
         Long applicationId = (appObj instanceof Number n) ? n.longValue() : 1L;
@@ -30,13 +29,13 @@ public class FeeCalculationWorker {
         Application application = applicationRepository.findById(applicationId).orElse(null);
         if (application == null) {
             log.info("Application {} not found in local DB. Providing default computed fee variables.", applicationId);
-            return Map.of(
-                    "calculatedFee", 38500.0,
-                    "totalFee", 38500.0,
-                    "scrutinyFee", 3500.0,
-                    "infrastructureFee", 30000.0,
-                    "environmentalCess", 5000.0
-            );
+            Map<String, Object> defaults = new HashMap<>();
+            defaults.put("calculatedFee", 38500.0);
+            defaults.put("totalFee", 38500.0);
+            defaults.put("scrutinyFee", 3500.0);
+            defaults.put("infrastructureFee", 30000.0);
+            defaults.put("environmentalCess", 5000.0);
+            return defaults;
         }
 
         double fee = feeCalculationService.calculateFee(
@@ -54,7 +53,9 @@ public class FeeCalculationWorker {
         auditService.logAudit(applicationId, "FEE_CALCULATED", "Fee Call Activity Worker", "SYSTEM",
                 "Permit fee computed as INR " + fee + " based on " + application.getBuildingType() + " specifications.");
 
-        return Map.of("calculatedFee", fee);
+        Map<String, Object> result = new HashMap<>();
+        result.put("calculatedFee", fee);
+        result.put("totalFee", fee);
+        return result;
     }
 }
-

@@ -60,9 +60,13 @@
     <bpmn:endEvent id="EndEvent_LandRejected" name="Rejected (Land / Survey Invalid)">
       <bpmn:incoming>Flow_LandValid_No</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:parallelGateway id="Gateway_ParallelReviewsSplit" name="Distribute to 4 Departments">
+    <bpmn:exclusiveGateway id="Gateway_ReviewEntry" name="Merge Review Entry">
       <bpmn:incoming>Flow_LandValid_Yes</bpmn:incoming>
       <bpmn:incoming>Flow_RevisionSubmitted</bpmn:incoming>
+      <bpmn:outgoing>Flow_To_ParallelReviewsSplit</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:parallelGateway id="Gateway_ParallelReviewsSplit" name="Distribute to 4 Departments">
+      <bpmn:incoming>Flow_To_ParallelReviewsSplit</bpmn:incoming>
       <bpmn:outgoing>Flow_To_FireReview</bpmn:outgoing>
       <bpmn:outgoing>Flow_To_WaterReview</bpmn:outgoing>
       <bpmn:outgoing>Flow_To_ZoningReview</bpmn:outgoing>
@@ -223,9 +227,10 @@
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_From_DocCorrection" sourceRef="Task_CorrectMissingDocuments" targetRef="Task_DocumentVerification" />
     <bpmn:sequenceFlow id="Flow_To_Gateway_LandValid" sourceRef="Task_LandRegistryVerification" targetRef="Gateway_LandVerification" />
-    <bpmn:sequenceFlow id="Flow_LandValid_Yes" name="Valid Title" sourceRef="Gateway_LandVerification" targetRef="Gateway_ParallelReviewsSplit">
+    <bpmn:sequenceFlow id="Flow_LandValid_Yes" name="Valid Title" sourceRef="Gateway_LandVerification" targetRef="Gateway_ReviewEntry">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= landRegistryValid = true</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_To_ParallelReviewsSplit" sourceRef="Gateway_ReviewEntry" targetRef="Gateway_ParallelReviewsSplit" />
     <bpmn:sequenceFlow id="Flow_LandValid_No" name="Disputed" sourceRef="Gateway_LandVerification" targetRef="EndEvent_LandRejected">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= landRegistryValid = false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -250,7 +255,7 @@
     <bpmn:sequenceFlow id="Flow_Decision_Rejected" name="Rejected" sourceRef="Gateway_OverallDecision" targetRef="EndEvent_DeptRejected">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= reviewDecision = "REJECTED"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_RevisionSubmitted" sourceRef="Task_ApplicantRevision" targetRef="Gateway_ParallelReviewsSplit" />
+    <bpmn:sequenceFlow id="Flow_RevisionSubmitted" sourceRef="Task_ApplicantRevision" targetRef="Gateway_ReviewEntry" />
     <bpmn:sequenceFlow id="Flow_To_PaymentTask" sourceRef="CallActivity_FeeCalculation" targetRef="Task_CitizenPayment" />
     <bpmn:sequenceFlow id="Flow_To_Gateway_Payment" sourceRef="Task_CitizenPayment" targetRef="Gateway_PaymentStatus" />
     <bpmn:sequenceFlow id="Flow_Payment_Success" name="Paid" sourceRef="Gateway_PaymentStatus" targetRef="Task_GeneratePermit">
@@ -296,10 +301,13 @@
           <dc:Bounds x="715" y="493" width="81" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Gateway_ReviewEntry" bpmnElement="Gateway_ReviewEntry" isMarkerVisible="true">
+        <dc:Bounds x="800" y="305" width="50" height="50" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Gateway_ParallelSplit" bpmnElement="Gateway_ParallelReviewsSplit">
-        <dc:Bounds x="850" y="305" width="50" height="50" />
+        <dc:Bounds x="880" y="305" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="841" y="362" width="68" height="27" />
+          <dc:Bounds x="871" y="362" width="68" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_SubProcess_FireReview" bpmnElement="SubProcess_FireReview" isExpanded="false">
@@ -408,10 +416,14 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_Flow_LandValid_Yes" bpmnElement="Flow_LandValid_Yes">
         <di:waypoint x="780" y="330" />
-        <di:waypoint x="850" y="330" />
+        <di:waypoint x="800" y="330" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="791" y="308" width="48" height="14" />
+          <dc:Bounds x="782" y="308" width="48" height="14" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_To_ParallelReviewsSplit" bpmnElement="Flow_To_ParallelReviewsSplit">
+        <di:waypoint x="850" y="330" />
+        <di:waypoint x="880" y="330" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_Flow_LandValid_No" bpmnElement="Flow_LandValid_No">
         <di:waypoint x="755" y="355" />
@@ -421,25 +433,23 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_Flow_To_FireReview" bpmnElement="Flow_To_FireReview">
-        <di:waypoint x="875" y="305" />
-        <di:waypoint x="875" y="165" />
+        <di:waypoint x="905" y="305" />
+        <di:waypoint x="905" y="165" />
         <di:waypoint x="970" y="165" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_Flow_To_WaterReview" bpmnElement="Flow_To_WaterReview">
-        <di:waypoint x="890" y="310" />
         <di:waypoint x="920" y="310" />
-        <di:waypoint x="920" y="280" />
+        <di:waypoint x="940" y="310" />
+        <di:waypoint x="940" y="280" />
         <di:waypoint x="970" y="280" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_Flow_To_ZoningReview" bpmnElement="Flow_To_ZoningReview">
-        <di:waypoint x="900" y="330" />
         <di:waypoint x="930" y="330" />
-        <di:waypoint x="930" y="370" />
-        <di:waypoint x="970" y="370" />
+        <di:waypoint x="970" y="330" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_Flow_To_EnvReview" bpmnElement="Flow_To_EnvReview">
-        <di:waypoint x="875" y="355" />
-        <di:waypoint x="875" y="460" />
+        <di:waypoint x="905" y="355" />
+        <di:waypoint x="905" y="460" />
         <di:waypoint x="970" y="460" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_Flow_FireEscalation" bpmnElement="Flow_FireEscalation">

@@ -17,6 +17,7 @@ public class DepartmentReview {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "application_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "reviews", "documents"})
     private Application application;
 
     @Enumerated(EnumType.STRING)
@@ -25,6 +26,7 @@ public class DepartmentReview {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "officer_id")
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password"})
     private User officer;
 
     private String officerName;
