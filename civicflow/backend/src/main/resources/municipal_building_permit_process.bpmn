@@ -344,38 +344,41 @@
 
       <!-- 7A. Fire Department Subprocess -->
       <bpmndi:BPMNShape id="Shape_SubProcess_FireReview" bpmnElement="SubProcess_FireReview" isExpanded="false">
-        <dc:Bounds x="970" y="50" width="140" height="70" />
+        <dc:Bounds x="970" y="60" width="140" height="70" />
       </bpmndi:BPMNShape>
 
-      <!-- Timer Boundary Event on Fire Review -->
+      <!-- Timer Boundary Event on Fire Review (Attached to bottom of Fire Subprocess) -->
       <bpmndi:BPMNShape id="Shape_Timer_FireEscalation" bpmnElement="Timer_FireEscalation">
-        <dc:Bounds x="1092" y="102" width="36" height="36" />
+        <dc:Bounds x="1072" y="112" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1075" y="145" width="70" height="27" />
+          <dc:Bounds x="1056" y="152" width="70" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <!-- Escalation Task & End -->
       <bpmndi:BPMNShape id="Shape_Task_NotifyEscalation" bpmnElement="Task_NotifyEscalation">
-        <dc:Bounds x="1160" y="135" width="110" height="50" />
+        <dc:Bounds x="1160" y="105" width="120" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_End_EscalationLogged" bpmnElement="End_EscalationLogged">
-        <dc:Bounds x="1302" y="142" width="36" height="36" />
+        <dc:Bounds x="1312" y="112" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1302" y="152" width="56" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
 
       <!-- 7B. Water Department -->
       <bpmndi:BPMNShape id="Shape_Task_WaterReview" bpmnElement="Task_WaterReview">
-        <dc:Bounds x="970" y="145" width="140" height="60" />
+        <dc:Bounds x="970" y="180" width="140" height="60" />
       </bpmndi:BPMNShape>
 
       <!-- 7C. Zoning Department -->
       <bpmndi:BPMNShape id="Shape_Task_ZoningReview" bpmnElement="Task_ZoningReview">
-        <dc:Bounds x="970" y="230" width="140" height="60" />
+        <dc:Bounds x="970" y="270" width="140" height="60" />
       </bpmndi:BPMNShape>
 
       <!-- 7D. Environmental Department -->
       <bpmndi:BPMNShape id="Shape_Task_EnvReview" bpmnElement="Task_EnvReview">
-        <dc:Bounds x="970" y="315" width="140" height="60" />
+        <dc:Bounds x="970" y="360" width="140" height="60" />
       </bpmndi:BPMNShape>
 
       <!-- 8. Parallel Join Gateway -->
@@ -509,69 +512,72 @@
       <!-- ParallelSplit -> Fire Safety -->
       <bpmndi:BPMNEdge id="Edge_Flow_To_FireReview" bpmnElement="Flow_To_FireReview">
         <di:waypoint x="875" y="235" />
-        <di:waypoint x="875" y="85" />
-        <di:waypoint x="970" y="85" />
+        <di:waypoint x="875" y="95" />
+        <di:waypoint x="970" y="95" />
       </bpmndi:BPMNEdge>
 
       <!-- ParallelSplit -> Water -->
       <bpmndi:BPMNEdge id="Edge_Flow_To_WaterReview" bpmnElement="Flow_To_WaterReview">
         <di:waypoint x="890" y="240" />
         <di:waypoint x="920" y="240" />
-        <di:waypoint x="920" y="175" />
-        <di:waypoint x="970" y="175" />
+        <di:waypoint x="920" y="210" />
+        <di:waypoint x="970" y="210" />
       </bpmndi:BPMNEdge>
 
       <!-- ParallelSplit -> Zoning -->
       <bpmndi:BPMNEdge id="Edge_Flow_To_ZoningReview" bpmnElement="Flow_To_ZoningReview">
         <di:waypoint x="900" y="260" />
-        <di:waypoint x="970" y="260" />
+        <di:waypoint x="930" y="260" />
+        <di:waypoint x="930" y="300" />
+        <di:waypoint x="970" y="300" />
       </bpmndi:BPMNEdge>
 
       <!-- ParallelSplit -> Environmental -->
       <bpmndi:BPMNEdge id="Edge_Flow_To_EnvReview" bpmnElement="Flow_To_EnvReview">
         <di:waypoint x="875" y="285" />
-        <di:waypoint x="875" y="345" />
-        <di:waypoint x="970" y="345" />
+        <di:waypoint x="875" y="390" />
+        <di:waypoint x="970" y="390" />
       </bpmndi:BPMNEdge>
 
       <!-- Timer Boundary -> Escalation -->
       <bpmndi:BPMNEdge id="Edge_Flow_FireEscalation" bpmnElement="Flow_FireEscalation">
-        <di:waypoint x="1110" y="138" />
-        <di:waypoint x="1110" y="160" />
-        <di:waypoint x="1160" y="160" />
+        <di:waypoint x="1108" y="130" />
+        <di:waypoint x="1160" y="130" />
       </bpmndi:BPMNEdge>
 
       <!-- Escalation -> End -->
       <bpmndi:BPMNEdge id="Edge_Flow_End_Escalation" bpmnElement="Flow_End_Escalation">
-        <di:waypoint x="1270" y="160" />
-        <di:waypoint x="1302" y="160" />
+        <di:waypoint x="1280" y="130" />
+        <di:waypoint x="1312" y="130" />
       </bpmndi:BPMNEdge>
 
       <!-- Fire -> ParallelJoin -->
       <bpmndi:BPMNEdge id="Edge_Flow_From_FireSubprocess" bpmnElement="Flow_From_FireSubprocess">
-        <di:waypoint x="1110" y="85" />
-        <di:waypoint x="1205" y="85" />
+        <di:waypoint x="1110" y="95" />
+        <di:waypoint x="1205" y="95" />
         <di:waypoint x="1205" y="235" />
       </bpmndi:BPMNEdge>
 
       <!-- Water -> ParallelJoin -->
       <bpmndi:BPMNEdge id="Edge_Flow_From_WaterReview" bpmnElement="Flow_From_WaterReview">
-        <di:waypoint x="1110" y="175" />
-        <di:waypoint x="1150" y="175" />
+        <di:waypoint x="1110" y="210" />
+        <di:waypoint x="1150" y="210" />
         <di:waypoint x="1150" y="250" />
         <di:waypoint x="1180" y="250" />
       </bpmndi:BPMNEdge>
 
       <!-- Zoning -> ParallelJoin -->
       <bpmndi:BPMNEdge id="Edge_Flow_From_ZoningReview" bpmnElement="Flow_From_ZoningReview">
-        <di:waypoint x="1110" y="260" />
-        <di:waypoint x="1180" y="260" />
+        <di:waypoint x="1110" y="300" />
+        <di:waypoint x="1150" y="300" />
+        <di:waypoint x="1150" y="270" />
+        <di:waypoint x="1180" y="270" />
       </bpmndi:BPMNEdge>
 
       <!-- Environmental -> ParallelJoin -->
       <bpmndi:BPMNEdge id="Edge_Flow_From_EnvReview" bpmnElement="Flow_From_EnvReview">
-        <di:waypoint x="1110" y="345" />
-        <di:waypoint x="1205" y="345" />
+        <di:waypoint x="1110" y="390" />
+        <di:waypoint x="1205" y="390" />
         <di:waypoint x="1205" y="285" />
       </bpmndi:BPMNEdge>
 
