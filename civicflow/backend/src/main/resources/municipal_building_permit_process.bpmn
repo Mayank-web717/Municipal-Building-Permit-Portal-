@@ -36,8 +36,12 @@
 
     <!-- User Task: Missing Documents Correction -->
     <bpmn:userTask id="Task_CorrectMissingDocuments" name="Applicant Corrects Missing Documents">
+      <bpmn:documentation>Applicant re-uploads required documents or certificates that were missing or invalid.</bpmn:documentation>
       <bpmn:extensionElements>
-        <zeebe:formDefinition formKey="form_missing_docs" />
+        <zeebe:userTask />
+        <zeebe:formDefinition formId="form-missing-documents" />
+        <zeebe:assignmentDefinition candidateGroups="applicants" />
+        <zeebe:priorityDefinition priority="50" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_DocValid_No</bpmn:incoming>
       <bpmn:outgoing>Flow_From_DocCorrection</bpmn:outgoing>
@@ -100,6 +104,13 @@
         <bpmn:outgoing>Flow_Inside_Fire</bpmn:outgoing>
       </bpmn:startEvent>
       <bpmn:userTask id="Task_FireSafetyReview" name="Fire Safety Review">
+        <bpmn:documentation>Fire Safety Officer inspects fire suppression, hydrants, staircases, and emergency access in Tasklist.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <zeebe:userTask />
+          <zeebe:formDefinition formId="form-fire-safety-review" />
+          <zeebe:assignmentDefinition candidateGroups="fire-officers" />
+          <zeebe:priorityDefinition priority="60" />
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_Inside_Fire</bpmn:incoming>
         <bpmn:outgoing>Flow_Inside_Fire_End</bpmn:outgoing>
       </bpmn:userTask>
@@ -132,18 +143,39 @@
 
     <!-- 7B. Water Department Review -->
     <bpmn:userTask id="Task_WaterReview" name="Water Department Review">
+      <bpmn:documentation>Water Supply and Sewerage Board verifies pipeline connection feasibility, STP, and rainwater harvesting.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+        <zeebe:formDefinition formId="form-water-review" />
+        <zeebe:assignmentDefinition candidateGroups="water-officers" />
+        <zeebe:priorityDefinition priority="50" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_To_WaterReview</bpmn:incoming>
       <bpmn:outgoing>Flow_From_WaterReview</bpmn:outgoing>
     </bpmn:userTask>
 
     <!-- 7C. Zoning Department Review -->
     <bpmn:userTask id="Task_ZoningReview" name="Zoning Department Review">
+      <bpmn:documentation>Town Planning Officer verifies Floor Area Ratio (FAR), road setbacks, and master plan land use.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+        <zeebe:formDefinition formId="form-zoning-review" />
+        <zeebe:assignmentDefinition candidateGroups="zoning-officers" />
+        <zeebe:priorityDefinition priority="50" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_To_ZoningReview</bpmn:incoming>
       <bpmn:outgoing>Flow_From_ZoningReview</bpmn:outgoing>
     </bpmn:userTask>
 
     <!-- 7D. Environmental Review -->
     <bpmn:userTask id="Task_EnvReview" name="Environmental Review">
+      <bpmn:documentation>Environmental Officer verifies green landscape area, solid waste management, and solar provisions.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+        <zeebe:formDefinition formId="form-environmental-review" />
+        <zeebe:assignmentDefinition candidateGroups="environmental-officers" />
+        <zeebe:priorityDefinition priority="50" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_To_EnvReview</bpmn:incoming>
       <bpmn:outgoing>Flow_From_EnvReview</bpmn:outgoing>
     </bpmn:userTask>
@@ -181,6 +213,13 @@
 
     <!-- Revision Subprocess / User Task -->
     <bpmn:userTask id="Task_ApplicantRevision" name="Applicant Uploads Revised Blueprint">
+      <bpmn:documentation>Applicant updates and re-uploads architectural drawings to resolve department revision requests.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+        <zeebe:formDefinition formId="form-applicant-revision" />
+        <zeebe:assignmentDefinition candidateGroups="applicants" />
+        <zeebe:priorityDefinition priority="60" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_Decision_Revision</bpmn:incoming>
       <bpmn:outgoing>Flow_RevisionSubmitted</bpmn:outgoing>
     </bpmn:userTask>
@@ -196,6 +235,13 @@
 
     <!-- 12. User Task: Payment by Citizen / Architect -->
     <bpmn:userTask id="Task_CitizenPayment" name="Citizen / Architect Payment">
+      <bpmn:documentation>Citizen or Architect views calculated municipal fees and remits statutory payment in Tasklist or Web Portal.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+        <zeebe:formDefinition formId="form-citizen-payment" />
+        <zeebe:assignmentDefinition candidateGroups="applicants" />
+        <zeebe:priorityDefinition priority="70" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_To_PaymentTask</bpmn:incoming>
       <bpmn:incoming>Flow_Payment_Failed</bpmn:incoming>
       <bpmn:outgoing>Flow_To_Gateway_Payment</bpmn:outgoing>

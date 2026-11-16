@@ -1,0 +1,74 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.8.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.49.0"
+  },
+  "schemaVersion": 18,
+  "id": "form-missing-documents",
+  "type": "default",
+  "components": [
+    {
+      "id": "Text_Title",
+      "type": "text",
+      "text": "# Municipal Permit Portal - Document Correction\n### Action Required: Missing or Incomplete Supporting Documents\nYour application requires missing documents before technical departmental scrutiny can commence."
+    },
+    {
+      "id": "Field_AppNumber",
+      "key": "applicationNumber",
+      "label": "Application Reference Number",
+      "type": "textfield",
+      "readonly": true,
+      "layout": { "row": "Row_1", "columns": 6 }
+    },
+    {
+      "id": "Field_ApplicantName",
+      "key": "applicantName",
+      "label": "Applicant Name",
+      "type": "textfield",
+      "readonly": true,
+      "layout": { "row": "Row_1", "columns": 6 }
+    },
+    {
+      "id": "Field_ScrutinyNote",
+      "key": "documentScrutinyRemarks",
+      "label": "Document Scrutiny Notes from Municipal Registrar",
+      "type": "textarea",
+      "readonly": true,
+      "defaultValue": "Structural stability certificate and registered land sale deed were missing or unreadable."
+    },
+    {
+      "id": "Field_ReuploadedBlueprint",
+      "key": "correctedBlueprintUrl",
+      "label": "Upload Corrected Blueprint File / Document URL",
+      "type": "textfield",
+      "validate": { "required": true },
+      "defaultValue": "documents/corrected_architectural_blueprint_rev1.pdf"
+    },
+    {
+      "id": "Field_ReuploadedDeed",
+      "key": "correctedLandDeedUrl",
+      "label": "Upload Valid Registered Title Deed / Certificate",
+      "type": "textfield",
+      "validate": { "required": true },
+      "defaultValue": "documents/registered_land_ownership_cert.pdf"
+    },
+    {
+      "id": "Field_ApplicantNote",
+      "key": "applicantCorrectionRemarks",
+      "label": "Applicant Clarification / Submission Notes",
+      "type": "textarea",
+      "validate": { "required": true },
+      "defaultValue": "Uploaded registered land deed from sub-registrar office and licensed structural engineer stamp."
+    },
+    {
+      "id": "Field_Confirm",
+      "key": "documentsReuploadedConfirmed",
+      "label": "I confirm that all requested documents are attached and verified.",
+      "type": "checkbox",
+      "validate": { "required": true },
+      "defaultValue": true
+    }
+  ]
+}

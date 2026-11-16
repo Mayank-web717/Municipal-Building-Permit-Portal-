@@ -1,0 +1,105 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.8.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.49.0"
+  },
+  "schemaVersion": 18,
+  "id": "form-zoning-review",
+  "type": "default",
+  "components": [
+    {
+      "id": "Text_Title",
+      "type": "text",
+      "text": "# Town Planning & Zoning Directorate\n### Master Plan, Land Use & Setback Compliance\nVerify zoning category, Floor Area Ratio (FAR), road setbacks, and permissible building height."
+    },
+    {
+      "id": "Field_AppNumber",
+      "key": "applicationNumber",
+      "label": "Application Reference Number",
+      "type": "textfield",
+      "readonly": true,
+      "layout": { "row": "Row_1", "columns": 6 }
+    },
+    {
+      "id": "Field_ApplicantName",
+      "key": "applicantName",
+      "label": "Applicant Name",
+      "type": "textfield",
+      "readonly": true,
+      "layout": { "row": "Row_1", "columns": 6 }
+    },
+    {
+      "id": "Field_BuildingType",
+      "key": "buildingType",
+      "label": "Zoning Land Use Category",
+      "type": "textfield",
+      "readonly": true,
+      "layout": { "row": "Row_2", "columns": 4 }
+    },
+    {
+      "id": "Field_PlotArea",
+      "key": "plotArea",
+      "label": "Total Plot Area (sq.ft.)",
+      "type": "number",
+      "readonly": true,
+      "layout": { "row": "Row_2", "columns": 4 }
+    },
+    {
+      "id": "Field_BuiltUpArea",
+      "key": "proposedBuiltUpArea",
+      "label": "Proposed Built-Up Area (sq.ft.)",
+      "type": "number",
+      "readonly": true,
+      "layout": { "row": "Row_2", "columns": 4 }
+    },
+    {
+      "id": "Text_Checklist",
+      "type": "text",
+      "text": "#### Master Plan Regulatory Checklist:"
+    },
+    {
+      "id": "Field_Check_Far",
+      "key": "farPermissible",
+      "label": "Floor Area Ratio (FAR) does not exceed maximum allowable zoning threshold",
+      "type": "checkbox",
+      "defaultValue": true
+    },
+    {
+      "id": "Field_Check_Setbacks",
+      "key": "setbacksCompliant",
+      "label": "Front (3m), Rear (2m), and Lateral (1.5m) setbacks comply with municipal bye-laws",
+      "type": "checkbox",
+      "defaultValue": true
+    },
+    {
+      "id": "Field_Check_Height",
+      "key": "heightClearanceVerified",
+      "label": "Building height and road right-of-way (ROW) clearance verified",
+      "type": "checkbox",
+      "defaultValue": true
+    },
+    {
+      "id": "Field_Decision",
+      "key": "zoningReviewDecision",
+      "label": "Zoning & Town Planning Decision",
+      "type": "radio",
+      "validate": { "required": true },
+      "defaultValue": "APPROVED",
+      "values": [
+        { "label": "Approve (Grant Town Planning Clearance)", "value": "APPROVED" },
+        { "label": "Request Revision (Adjust Setback / FAR Infractions)", "value": "REVISION_REQUESTED" },
+        { "label": "Reject (Illegal Land Use / Master Plan Violation)", "value": "REJECTED" }
+      ]
+    },
+    {
+      "id": "Field_Comments",
+      "key": "zoningComments",
+      "label": "Town Planning Officer Remarks",
+      "type": "textarea",
+      "validate": { "required": true, "maxLength": 1000 },
+      "defaultValue": "Complies with City Master Plan 2031 land use classification and permissible FAR limits."
+    }
+  ]
+}

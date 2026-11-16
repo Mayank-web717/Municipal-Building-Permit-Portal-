@@ -1,0 +1,105 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.8.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.49.0"
+  },
+  "schemaVersion": 18,
+  "id": "form-fire-safety-review",
+  "type": "default",
+  "components": [
+    {
+      "id": "Text_Title",
+      "type": "text",
+      "text": "# Fire & Rescue Department\n### Building Safety & Fire Protection Scrutiny\nReview the building blueprint, survey details, and emergency evacuation provisions."
+    },
+    {
+      "id": "Field_AppNumber",
+      "key": "applicationNumber",
+      "label": "Application Reference Number",
+      "type": "textfield",
+      "readonly": true,
+      "layout": { "row": "Row_1", "columns": 6 }
+    },
+    {
+      "id": "Field_ApplicantName",
+      "key": "applicantName",
+      "label": "Applicant / Architect Name",
+      "type": "textfield",
+      "readonly": true,
+      "layout": { "row": "Row_1", "columns": 6 }
+    },
+    {
+      "id": "Field_BuildingType",
+      "key": "buildingType",
+      "label": "Building Category",
+      "type": "textfield",
+      "readonly": true,
+      "layout": { "row": "Row_2", "columns": 4 }
+    },
+    {
+      "id": "Field_BuiltUpArea",
+      "key": "proposedBuiltUpArea",
+      "label": "Proposed Built-Up Area (sq.ft.)",
+      "type": "number",
+      "readonly": true,
+      "layout": { "row": "Row_2", "columns": 4 }
+    },
+    {
+      "id": "Field_Floors",
+      "key": "floors",
+      "label": "Number of Floors",
+      "type": "number",
+      "readonly": true,
+      "layout": { "row": "Row_2", "columns": 4 }
+    },
+    {
+      "id": "Text_Checklist",
+      "type": "text",
+      "text": "#### Fire Safety Technical Checklist (NBC 2016 Compliance):"
+    },
+    {
+      "id": "Field_Check_Exits",
+      "key": "fireExitsCompliant",
+      "label": "Dual emergency fire staircases and unobstructed escape corridors verified",
+      "type": "checkbox",
+      "defaultValue": true
+    },
+    {
+      "id": "Field_Check_Hydrants",
+      "key": "fireHydrantsCompliant",
+      "label": "Wet riser, automatic fire sprinklers, and dedicated fire water tank (50,000L) approved",
+      "type": "checkbox",
+      "defaultValue": true
+    },
+    {
+      "id": "Field_Check_Access",
+      "key": "emergencyAccessCompliant",
+      "label": "Minimum 6.0m clear driveway for municipal fire engines confirmed",
+      "type": "checkbox",
+      "defaultValue": true
+    },
+    {
+      "id": "Field_Decision",
+      "key": "fireReviewDecision",
+      "label": "Official Fire Department Scrutiny Decision",
+      "type": "radio",
+      "validate": { "required": true },
+      "defaultValue": "APPROVED",
+      "values": [
+        { "label": "Approve (Issue Fire Safety NOC)", "value": "APPROVED" },
+        { "label": "Request Revision (Require Modified Fire Evacuation Plan)", "value": "REVISION_REQUESTED" },
+        { "label": "Reject (Critical Fire & Life Safety Hazards)", "value": "REJECTED" }
+      ]
+    },
+    {
+      "id": "Field_Comments",
+      "key": "fireComments",
+      "label": "Fire Officer Technical Remarks / Recommendations",
+      "type": "textarea",
+      "validate": { "required": true, "maxLength": 1000 },
+      "defaultValue": "All active and passive fire protection systems conform to National Building Code (Part IV Fire & Life Safety)."
+    }
+  ]
+}

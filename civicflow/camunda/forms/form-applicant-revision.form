@@ -1,0 +1,66 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.8.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.49.0"
+  },
+  "schemaVersion": 18,
+  "id": "form-applicant-revision",
+  "type": "default",
+  "components": [
+    {
+      "id": "Text_Title",
+      "type": "text",
+      "text": "# Municipal Permit Portal - Departmental Revision Submission\n### Technical Department Modification Notice\nOne or more municipal departments requested modifications to your building design."
+    },
+    {
+      "id": "Field_AppNumber",
+      "key": "applicationNumber",
+      "label": "Application Reference Number",
+      "type": "textfield",
+      "readonly": true,
+      "layout": { "row": "Row_1", "columns": 6 }
+    },
+    {
+      "id": "Field_ApplicantName",
+      "key": "applicantName",
+      "label": "Applicant Name",
+      "type": "textfield",
+      "readonly": true,
+      "layout": { "row": "Row_1", "columns": 6 }
+    },
+    {
+      "id": "Field_DeptFeedback",
+      "key": "departmentFeedbackSummary",
+      "label": "Department Scrutiny Comments & Deficiencies",
+      "type": "textarea",
+      "readonly": true,
+      "defaultValue": "Modify side setback from 1.2m to mandatory 1.5m, and incorporate second fire exit staircase."
+    },
+    {
+      "id": "Field_RevisedBlueprint",
+      "key": "revisedBlueprintUrl",
+      "label": "Upload Corrected Architectural Blueprint (Revision Drawing)",
+      "type": "textfield",
+      "validate": { "required": true },
+      "defaultValue": "documents/revised_architectural_blueprint_v2.pdf"
+    },
+    {
+      "id": "Field_RevisionNotes",
+      "key": "architectRevisionNotes",
+      "label": "Architect's Explanation of Changes Incorporated",
+      "type": "textarea",
+      "validate": { "required": true },
+      "defaultValue": "Enlarged side setback to 1.52m and added 1.2m external fire escape stair connecting all levels."
+    },
+    {
+      "id": "Field_Confirm",
+      "key": "revisionConfirmed",
+      "label": "I certify that the revised plans address all municipal department concerns.",
+      "type": "checkbox",
+      "validate": { "required": true },
+      "defaultValue": true
+    }
+  ]
+}

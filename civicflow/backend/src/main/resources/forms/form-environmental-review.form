@@ -1,0 +1,97 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.8.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.49.0"
+  },
+  "schemaVersion": 18,
+  "id": "form-environmental-review",
+  "type": "default",
+  "components": [
+    {
+      "id": "Text_Title",
+      "type": "text",
+      "text": "# Environmental Protection Authority\n### Eco-Clearance, Green Belt & Energy Efficiency Scrutiny\nAssess green cover percentage, solid waste management, and solar renewable integration."
+    },
+    {
+      "id": "Field_AppNumber",
+      "key": "applicationNumber",
+      "label": "Application Reference Number",
+      "type": "textfield",
+      "readonly": true,
+      "layout": { "row": "Row_1", "columns": 6 }
+    },
+    {
+      "id": "Field_ApplicantName",
+      "key": "applicantName",
+      "label": "Applicant Name",
+      "type": "textfield",
+      "readonly": true,
+      "layout": { "row": "Row_1", "columns": 6 }
+    },
+    {
+      "id": "Field_BuildingType",
+      "key": "buildingType",
+      "label": "Building Category",
+      "type": "textfield",
+      "readonly": true,
+      "layout": { "row": "Row_2", "columns": 6 }
+    },
+    {
+      "id": "Field_BuiltUpArea",
+      "key": "proposedBuiltUpArea",
+      "label": "Proposed Built-Up Area (sq.ft.)",
+      "type": "number",
+      "readonly": true,
+      "layout": { "row": "Row_2", "columns": 6 }
+    },
+    {
+      "id": "Text_Checklist",
+      "type": "text",
+      "text": "#### Ecological & Green Building Checklist:"
+    },
+    {
+      "id": "Field_Check_GreenCover",
+      "key": "greenCoverSatisfied",
+      "label": "Minimum 15% permeable green landscaping and indigenous tree plantation verified",
+      "type": "checkbox",
+      "defaultValue": true
+    },
+    {
+      "id": "Field_Check_Waste",
+      "key": "wasteManagementPlanValid",
+      "label": "Segregated organic compost pit and construction debris disposal plan approved",
+      "type": "checkbox",
+      "defaultValue": true
+    },
+    {
+      "id": "Field_Check_Solar",
+      "key": "solarRenewableIntegrated",
+      "label": "Rooftop solar water heating / solar panel integration compliant with green bye-laws",
+      "type": "checkbox",
+      "defaultValue": true
+    },
+    {
+      "id": "Field_Decision",
+      "key": "envReviewDecision",
+      "label": "Environmental Scrutiny Decision",
+      "type": "radio",
+      "validate": { "required": true },
+      "defaultValue": "APPROVED",
+      "values": [
+        { "label": "Approve (Grant Environmental Clearance)", "value": "APPROVED" },
+        { "label": "Request Revision (Require Enhanced Eco Mitigation Plan)", "value": "REVISION_REQUESTED" },
+        { "label": "Reject (Severe Ecological / Green Buffer Encroachment)", "value": "REJECTED" }
+      ]
+    },
+    {
+      "id": "Field_Comments",
+      "key": "envComments",
+      "label": "Environmental Officer Clearance Remarks",
+      "type": "textarea",
+      "validate": { "required": true, "maxLength": 1000 },
+      "defaultValue": "Site landscape design and solar orientation meet municipal environmental benchmarks."
+    }
+  ]
+}

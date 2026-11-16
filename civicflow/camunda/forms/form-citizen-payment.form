@@ -1,0 +1,99 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.8.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.49.0"
+  },
+  "schemaVersion": 18,
+  "id": "form-citizen-payment",
+  "type": "default",
+  "components": [
+    {
+      "id": "Text_Title",
+      "type": "text",
+      "text": "# Municipal Corporation - Permit Fee Remittance\n### Statutory Application & Infrastructure Development Fees\nAll four technical departments have granted clearance. Please remit calculated statutory fees to receive your official digital building permit."
+    },
+    {
+      "id": "Field_AppNumber",
+      "key": "applicationNumber",
+      "label": "Application Number",
+      "type": "textfield",
+      "readonly": true,
+      "layout": { "row": "Row_1", "columns": 6 }
+    },
+    {
+      "id": "Field_ApplicantName",
+      "key": "applicantName",
+      "label": "Applicant Name",
+      "type": "textfield",
+      "readonly": true,
+      "layout": { "row": "Row_1", "columns": 6 }
+    },
+    {
+      "id": "Field_TotalFee",
+      "key": "totalFee",
+      "label": "Total Calculated Municipal Fee (INR)",
+      "type": "number",
+      "readonly": true,
+      "layout": { "row": "Row_2", "columns": 6 }
+    },
+    {
+      "id": "Field_ScrutinyFee",
+      "key": "scrutinyFee",
+      "label": "Plan Scrutiny Charge (INR)",
+      "type": "number",
+      "readonly": true,
+      "layout": { "row": "Row_2", "columns": 6 }
+    },
+    {
+      "id": "Field_InfraFee",
+      "key": "infrastructureFee",
+      "label": "Infrastructure Development Surcharge (INR)",
+      "type": "number",
+      "readonly": true,
+      "layout": { "row": "Row_3", "columns": 6 }
+    },
+    {
+      "id": "Field_EnvCess",
+      "key": "environmentalCess",
+      "label": "Green & Environmental Cess (INR)",
+      "type": "number",
+      "readonly": true,
+      "layout": { "row": "Row_3", "columns": 6 }
+    },
+    {
+      "id": "Field_PayMethod",
+      "key": "paymentMethod",
+      "label": "Payment Gateway Method",
+      "type": "radio",
+      "validate": { "required": true },
+      "defaultValue": "NET_BANKING",
+      "values": [
+        { "label": "Net Banking (State Bank / HDFC / ICICI)", "value": "NET_BANKING" },
+        { "label": "Credit / Debit Card (Visa, MasterCard, RuPay)", "value": "CREDIT_CARD" },
+        { "label": "UPI / BHIM Instant Remittance", "value": "UPI" }
+      ]
+    },
+    {
+      "id": "Field_PaymentSuccess",
+      "key": "paymentSuccess",
+      "label": "Simulate Payment Gateway Transaction Outcome",
+      "type": "select",
+      "validate": { "required": true },
+      "defaultValue": true,
+      "values": [
+        { "label": "Successful Payment (Txn Captured)", "value": true },
+        { "label": "Declined / Failed Transaction (Simulate Retry)", "value": false }
+      ]
+    },
+    {
+      "id": "Field_Authorize",
+      "key": "paymentAuthorizationConfirmed",
+      "label": "I authorize payment of municipal permit fee and agree to municipal terms.",
+      "type": "checkbox",
+      "validate": { "required": true },
+      "defaultValue": true
+    }
+  ]
+}
