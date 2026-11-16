@@ -50,5 +50,11 @@ public class ReviewController {
                 applicationId, request, DepartmentReview.ReviewStatus.REVISION_REQUESTED);
         return ResponseEntity.ok(review);
     }
-}
 
+    @PostMapping("/{applicationId}/batch-approve")
+    public ResponseEntity<List<DepartmentReview>> batchApproveAll(
+            @PathVariable Long applicationId,
+            @RequestParam(defaultValue = "1") Long officerId) {
+        return ResponseEntity.ok(reviewService.batchApproveAll(applicationId, officerId));
+    }
+}

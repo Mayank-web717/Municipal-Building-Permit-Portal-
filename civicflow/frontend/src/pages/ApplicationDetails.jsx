@@ -10,7 +10,8 @@ import {
   FileText, 
   RefreshCw,
   Clock,
-  ShieldCheck
+  ShieldCheck,
+  Zap
 } from 'lucide-react';
 import WorkflowTracker from '../components/WorkflowTracker';
 import DepartmentApprovalGrid from '../components/DepartmentApprovalGrid';
@@ -22,8 +23,8 @@ export default function ApplicationDetails() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
+  const [approving, setApproving] = useState(false);
   const [uploadingRevision, setUploadingRevision] = useState(false);
-  const [revisionNote, setRevisionNote] = useState('');
   const [message, setMessage] = useState('');
 
   useEffect(() => {
@@ -38,6 +39,41 @@ export default function ApplicationDetails() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleReviewAction = async (department, action) => {
+    setMessage('');
+    try {
+      await api.post(`/reviews/${id}/${action}`, {
+        department,
+        officerId: 1,
+        comments: action === 'approve' 
+          ? 'Statutory compliance verified and approved by Municipal Administrator.' 
+          : action === 'revision'
+          ? 'Revisions required on architectural blueprint.'
+          : 'Statutory clearance rejected due to non-compliance.'
+      });
+
+      setMessage(`Department ${department.replace('_', ' ')} successfully updated (${action.toUpperCase()})! BPMN token synchronized.`);
+      loadDetails();
+    } catch (err) {
+      setMessage('Failed to process review: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const handleBatchApprove = async () => {
+    setApproving(true);
+    setMessage('');
+    try {
+      await api.post(`/reviews/${id}/batch-approve`);
+      setMessage('One-Click Clearance granted! All 4 departments cleared in parallel. Moving to Fee Calculation...');
+      confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+      loadDetails();
+    } catch (err) {
+      setMessage('Batch approval failed: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setApproving(false);
     }
   };
 
@@ -71,7 +107,6 @@ export default function ApplicationDetails() {
     setMessage('');
 
     try {
-      // Simulate multipart file upload for revised blueprint
       const blob = new Blob(["Revised blueprint CAD schematic v2"], { type: "text/plain" });
       const file = new File([blob], "Revised_Architectural_Plan_v2.pdf");
 
@@ -103,6 +138,7 @@ export default function ApplicationDetails() {
   const app = data.application;
   const reviews = data.reviews || [];
   const documents = data.documents || [];
+  const hasPendingReviews = reviews.some(r => r.status === 'PENDING') || reviews.length < 4;
 
   return (
     <div className="space-y-6">
@@ -110,32 +146,32 @@ export default function ApplicationDetails() {
       <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="font-mono text-xs font-bold text-teal-700 bg-teal-50 px-2.5 py-1 rounded border border-teal-200">
+            <span className="text-xs font-mono font-bold text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200">
               {app.applicationNumber}
             </span>
-            <span className="text-xs text-slate-400 font-medium">
-              Submitted on {new Date(app.createdAt).toLocaleDateString()}
+            <span className="text-xs text-slate-400">•</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              {app.buildingType} PROJECT
             </span>
           </div>
           <h1 className="text-2xl font-bold text-slate-800 tracking-tight">{app.projectName}</h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            {app.propertyAddress}, {app.city} | Survey #{app.surveyNumber}
+            Applicant: {app.applicant?.fullName} ({app.applicant?.email}) | Filed on {new Date(app.createdAt).toLocaleDateString()}
           </p>
         </div>
 
-        {/* Status & Quick Action */}
         <div className="flex items-center gap-3">
-          <button
-            onClick={loadDetails}
-            className="p-2 border rounded-lg hover:bg-slate-50 text-slate-600 transition"
-            title="Refresh State"
+          <button 
+            onClick={loadDetails} 
+            className="p-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition"
+            title="Refresh Status"
           >
             <RefreshCw className="w-4 h-4" />
           </button>
 
           {app.status === 'PERMIT_ISSUED' && (
-            <a
-              href={`/api/permits/${app.id}/download`}
+            <a 
+              href={`/civicflow-storage/permits/${app.permitNumber}.pdf`}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-lg shadow-sm transition"
@@ -224,10 +260,38 @@ export default function ApplicationDetails() {
         </div>
       )}
 
-      {/* Parallel Department Reviews */}
+      {/* PARALLEL MULTI-INSTANCE DEPARTMENT REVIEWS (Direct Frontend Approval) */}
       <div className="space-y-3">
-        <h3 className="font-bold text-base text-slate-800">Departmental Review Statuses</h3>
-        <DepartmentApprovalGrid reviews={reviews} />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 className="font-bold text-base text-slate-800 flex items-center gap-2">
+              <span>Statutory Department Reviews</span>
+              <span className="text-[10px] font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+                Parallel Multi-Instance (|||)
+              </span>
+            </h3>
+            <p className="text-xs text-slate-500">
+              Admin clearance desk: approve departments directly below without using external tasklists.
+            </p>
+          </div>
+
+          {hasPendingReviews && (
+            <button
+              onClick={handleBatchApprove}
+              disabled={approving}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition disabled:opacity-50"
+            >
+              <Zap className="w-4 h-4" />
+              {approving ? 'Clearing Departments...' : 'One-Click Approve All 4 Departments'}
+            </button>
+          )}
+        </div>
+
+        <DepartmentApprovalGrid 
+          reviews={reviews} 
+          onReviewAction={handleReviewAction}
+          isActionable={true}
+        />
       </div>
 
       {/* Property & Specs Grid */}
@@ -248,45 +312,43 @@ export default function ApplicationDetails() {
               <span className="font-semibold text-slate-800">{app.buildingType}</span>
             </div>
             <div>
-              <span className="text-slate-400 block">Plot Land Area</span>
-              <span className="font-semibold text-slate-800">{app.plotArea} sq.m</span>
-            </div>
-            <div>
-              <span className="text-slate-400 block">Number of Floors</span>
+              <span className="text-slate-400 block">Floors</span>
               <span className="font-semibold text-slate-800">{app.numberOfFloors} Floors</span>
             </div>
             <div>
-              <span className="text-slate-400 block">Proposed Built Area</span>
-              <span className="font-semibold text-slate-800">{app.proposedBuildingArea} sq.m</span>
+              <span className="text-slate-400 block">Proposed Floor Area</span>
+              <span className="font-semibold text-slate-800">{app.proposedBuildingArea?.toLocaleString()} sq.ft</span>
+            </div>
+            <div>
+              <span className="text-slate-400 block">Plot Area</span>
+              <span className="font-semibold text-slate-800">{app.plotArea?.toLocaleString()} sq.ft</span>
             </div>
           </div>
         </div>
 
+        {/* Uploaded Documents */}
         <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3">
-          <h3 className="font-bold text-sm text-slate-800 border-b pb-2">Submitted Documents</h3>
-          <div className="space-y-2 text-xs">
-            {documents.length === 0 ? (
-              <div className="text-slate-400 italic">Pre-verified digital blueprints on record.</div>
-            ) : (
-              documents.map((doc) => (
-                <div key={doc.id} className="p-2.5 rounded-lg bg-slate-50 border flex items-center justify-between">
+          <h3 className="font-bold text-sm text-slate-800 border-b pb-2">Submitted Technical Drawings</h3>
+          {documents.length === 0 ? (
+            <p className="text-xs text-slate-400 py-4 text-center">No documents uploaded.</p>
+          ) : (
+            <div className="space-y-2">
+              {documents.map(doc => (
+                <div key={doc.id} className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100 text-xs">
                   <div className="flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-slate-500" />
+                    <FileText className="w-4 h-4 text-teal-600" />
                     <div>
-                      <p className="font-bold text-slate-700">{doc.documentType}</p>
-                      <p className="text-[10px] text-slate-400 font-mono">{doc.fileName}</p>
+                      <span className="font-semibold text-slate-800 block">{doc.originalFilename}</span>
+                      <span className="text-[10px] text-slate-400">{doc.documentType}</span>
                     </div>
                   </div>
-                  <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">
-                    Verified
-                  </span>
+                  <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">Verified</span>
                 </div>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
-

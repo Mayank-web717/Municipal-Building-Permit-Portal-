@@ -1,16 +1,28 @@
-import React from 'react';
-import { Flame, Droplets, Compass, Trees, CheckCircle, XCircle, Clock, AlertTriangle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Flame, Droplets, Compass, Trees, CheckCircle, XCircle, Clock, AlertTriangle, ShieldCheck } from 'lucide-react';
 
 const DEPARTMENTS = [
-  { key: 'FIRE_SAFETY', label: 'Fire Safety Dept', icon: Flame, color: 'text-orange-500' },
-  { key: 'WATER', label: 'Water Works Dept', icon: Droplets, color: 'text-cyan-500' },
-  { key: 'ZONING', label: 'Zoning & Master Plan', icon: Compass, color: 'text-amber-500' },
-  { key: 'ENVIRONMENTAL', label: 'Environmental Board', icon: Trees, color: 'text-emerald-500' }
+  { key: 'FIRE_SAFETY', label: 'Fire Safety Dept', icon: Flame, color: 'text-orange-500', bg: 'bg-orange-50' },
+  { key: 'WATER', label: 'Water Works Dept', icon: Droplets, color: 'text-cyan-500', bg: 'bg-cyan-50' },
+  { key: 'ZONING', label: 'Zoning & Master Plan', icon: Compass, color: 'text-amber-500', bg: 'bg-amber-50' },
+  { key: 'ENVIRONMENTAL', label: 'Environmental Board', icon: Trees, color: 'text-emerald-500', bg: 'bg-emerald-50' }
 ];
 
-export default function DepartmentApprovalGrid({ reviews = [] }) {
+export default function DepartmentApprovalGrid({ reviews = [], onReviewAction, isActionable = true }) {
+  const [loadingDept, setLoadingDept] = useState(null);
+
   const getReviewForDept = (deptKey) => {
     return reviews.find(r => r.department === deptKey);
+  };
+
+  const handleAction = async (deptKey, action) => {
+    if (!onReviewAction) return;
+    setLoadingDept(deptKey + '_' + action);
+    try {
+      await onReviewAction(deptKey, action);
+    } finally {
+      setLoadingDept(null);
+    }
   };
 
   const getStatusBadge = (review) => {
@@ -50,17 +62,22 @@ export default function DepartmentApprovalGrid({ reviews = [] }) {
       {DEPARTMENTS.map((dept) => {
         const review = getReviewForDept(dept.key);
         const Icon = dept.icon;
+        const isPending = !review || review.status === 'PENDING';
+        const isCurrentLoading = loadingDept?.startsWith(dept.key);
 
         return (
           <div 
             key={dept.key} 
-            className={`border rounded-xl p-4 bg-white shadow-sm flex flex-col justify-between ${
+            className={`border rounded-xl p-4 bg-white shadow-sm flex flex-col justify-between transition-all ${
+              review?.status === 'APPROVED' ? 'border-emerald-200 bg-emerald-50/20' :
+              review?.status === 'REJECTED' ? 'border-rose-200 bg-rose-50/20' :
+              review?.status === 'REVISION_REQUESTED' ? 'border-amber-200 bg-amber-50/20' :
               review?.isOverdue ? 'border-rose-400 ring-1 ring-rose-200' : 'border-slate-200'
             }`}
           >
             <div>
               <div className="flex items-center justify-between mb-3">
-                <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
+                <div className={`w-8 h-8 rounded-lg ${dept.bg} flex items-center justify-center`}>
                   <Icon className={`w-4 h-4 ${dept.color}`} />
                 </div>
                 {getStatusBadge(review)}
@@ -81,6 +98,39 @@ export default function DepartmentApprovalGrid({ reviews = [] }) {
               )}
             </div>
 
+            {/* Direct Frontend Admin Action Buttons */}
+            {isActionable && isPending && onReviewAction && (
+              <div className="mt-4 pt-3 border-t border-slate-100 space-y-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Admin Direct Action</span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => handleAction(dept.key, 'approve')}
+                    disabled={isCurrentLoading}
+                    className="flex-1 py-1.5 px-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-1 shadow-sm disabled:opacity-50"
+                    title="Clear statutory requirements for this department"
+                  >
+                    <CheckCircle className="w-3 h-3" /> Approve
+                  </button>
+                  <button
+                    onClick={() => handleAction(dept.key, 'revision')}
+                    disabled={isCurrentLoading}
+                    className="py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-lg text-xs font-semibold transition"
+                    title="Request applicant to revise blueprint"
+                  >
+                    Revision
+                  </button>
+                  <button
+                    onClick={() => handleAction(dept.key, 'reject')}
+                    disabled={isCurrentLoading}
+                    className="py-1.5 px-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-xs font-semibold transition"
+                    title="Reject permit submission"
+                  >
+                    Reject
+                  </button>
+                </div>
+              </div>
+            )}
+
             {review?.isOverdue && (
               <div className="mt-3 pt-2 border-t border-rose-100 text-[11px] font-semibold text-rose-600 flex items-center gap-1">
                 <AlertTriangle className="w-3.5 h-3.5" /> Overdue (SLA Exceeded)
@@ -92,4 +142,3 @@ export default function DepartmentApprovalGrid({ reviews = [] }) {
     </div>
   );
 }
-

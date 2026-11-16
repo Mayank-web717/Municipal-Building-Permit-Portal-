@@ -34,6 +34,9 @@ public class ApplicationController {
     private final DepartmentReviewRepository reviewRepository;
     private final NotificationAndAuditService auditService;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private io.camunda.zeebe.client.ZeebeClient zeebeClient;
+
     @PostMapping
     public ResponseEntity<Application> createApplication(@Valid @RequestBody ApplicationSubmitRequest request) {
         Application created = applicationService.submitApplication(request);
@@ -129,6 +132,17 @@ public class ApplicationController {
 
             auditService.logAudit(id, "REVISION_SUBMITTED", app.getApplicant().getFullName(),
                     "APPLICANT", "Uploaded revised documents. Returned to departmental review.");
+
+            if (zeebeClient != null) {
+                try {
+                    zeebeClient.newPublishMessageCommand()
+                            .messageName("Message_BlueprintRevised")
+                            .correlationKey(String.valueOf(id))
+                            .timeToLive(java.time.Duration.ofDays(7))
+                            .send()
+                            .join();
+                } catch (Exception ignored) {}
+            }
         }
 
         return ResponseEntity.ok(document);

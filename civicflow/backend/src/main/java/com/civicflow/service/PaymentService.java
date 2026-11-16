@@ -8,14 +8,17 @@ import com.civicflow.model.Permit;
 import com.civicflow.repository.ApplicationRepository;
 import com.civicflow.repository.DepartmentReviewRepository;
 import com.civicflow.repository.PaymentRepository;
+import io.camunda.zeebe.client.ZeebeClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +30,9 @@ public class PaymentService {
     private final DepartmentReviewRepository reviewRepository;
     private final PermitPdfGeneratorService pdfGeneratorService;
     private final NotificationAndAuditService auditService;
+
+    @Autowired(required = false)
+    private ZeebeClient zeebeClient;
 
     @Transactional
     public Payment processPayment(PaymentRequest request) {
@@ -51,6 +57,7 @@ public class PaymentService {
             auditService.logAudit(application.getId(), "PAYMENT_FAILED", "Citizen / Mock Gateway",
                     "APPLICANT", "Payment of INR " + request.getAmount() + " failed at gateway. Retry allowed.");
 
+            publishZeebePaymentMessage(application.getId(), false, txnId);
             return failedPayment;
         }
 
@@ -82,7 +89,31 @@ public class PaymentService {
         application.setCurrentStage("Permit Issued");
         applicationRepository.save(application);
 
+        // Advance Camunda Zeebe BPMN process token
+        publishZeebePaymentMessage(application.getId(), true, txnId);
+
         return successfulPayment;
     }
-}
 
+    private void publishZeebePaymentMessage(Long applicationId, boolean success, String txnId) {
+        if (zeebeClient != null) {
+            try {
+                Map<String, Object> vars = new HashMap<>();
+                vars.put("paymentSuccess", success);
+                vars.put("transactionId", txnId);
+
+                zeebeClient.newPublishMessageCommand()
+                        .messageName("Message_CitizenPayment")
+                        .correlationKey(String.valueOf(applicationId))
+                        .variables(vars)
+                        .timeToLive(java.time.Duration.ofDays(7))
+                        .send()
+                        .join();
+                log.info("[Zeebe Message] Published Message_CitizenPayment for App #{} with paymentSuccess={}",
+                        applicationId, success);
+            } catch (Exception e) {
+                log.warn("Could not publish Zeebe payment message: {}", e.getMessage());
+            }
+        }
+    }
+}
