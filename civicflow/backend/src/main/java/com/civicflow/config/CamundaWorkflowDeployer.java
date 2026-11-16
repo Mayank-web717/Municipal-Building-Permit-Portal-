@@ -28,6 +28,7 @@ public class CamundaWorkflowDeployer implements ApplicationRunner {
             PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
             
             Resource[] bpmns = resolver.getResources("classpath:*.bpmn");
+            Resource[] dmns = resolver.getResources("classpath:dmn/*.dmn");
             Resource[] forms = resolver.getResources("classpath:forms/*.form");
 
             int count = 0;
@@ -42,6 +43,21 @@ public class CamundaWorkflowDeployer implements ApplicationRunner {
                         }
                         count++;
                         log.info("Queued BPMN workflow for Camunda 8 deployment: {}", r.getFilename());
+                    }
+                }
+            }
+
+            for (Resource r : dmns) {
+                if (r.exists() && r.getFilename() != null) {
+                    try (InputStream is = r.getInputStream()) {
+                        byte[] bytes = is.readAllBytes();
+                        if (deployCmd == null) {
+                            deployCmd = zeebeClient.newDeployResourceCommand().addResourceBytes(bytes, r.getFilename());
+                        } else {
+                            deployCmd = deployCmd.addResourceBytes(bytes, r.getFilename());
+                        }
+                        count++;
+                        log.info("Queued DMN Decision Table for Camunda 8 deployment: {}", r.getFilename());
                     }
                 }
             }

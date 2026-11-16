@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:modeler="http://camunda.org/schema/modeler/1.0"
+             id="Definitions_PermitFeeMatrix"
+             name="Municipal Permit Fee Rate Matrix"
+             namespace="http://camunda.org/schema/1.0/dmn"
+             exporter="Camunda Modeler"
+             exporterVersion="5.49.0"
+             modeler:executionPlatform="Camunda Cloud"
+             modeler:executionPlatformVersion="8.8.0">
+
+  <decision id="decision-permit-fee-matrix" name="Municipal Permit Fee Matrix">
+    <description>Calculates base scrutiny fee, sq.ft. area rate, floor surcharge percentage, and environmental cess based on municipal tariff bye-laws.</description>
+    <decisionTable id="DecisionTable_FeeMatrix" hitPolicy="FIRST">
+      <input id="Input_BuildingType" label="Building Category">
+        <inputExpression id="InputExpr_Type" typeRef="string">
+          <text>buildingType</text>
+        </inputExpression>
+        <inputValues id="InputValues_Type">
+          <text>"RESIDENTIAL","COMMERCIAL","INDUSTRIAL"</text>
+        </inputValues>
+      </input>
+
+      <input id="Input_Area" label="Proposed Built-Up Area (sq.ft.)">
+        <inputExpression id="InputExpr_Area" typeRef="number">
+          <text>proposedBuiltUpArea</text>
+        </inputExpression>
+      </input>
+
+      <input id="Input_Floors" label="Number of Floors">
+        <inputExpression id="InputExpr_Floors" typeRef="number">
+          <text>floors</text>
+        </inputExpression>
+      </input>
+
+      <output id="Output_BaseRate" label="Base Rate per sq.ft. (INR)" name="baseRatePerSqFt" typeRef="number" />
+      <output id="Output_ScrutinyFee" label="Flat Scrutiny Charge (INR)" name="scrutinyFee" typeRef="number" />
+      <output id="Output_FloorSurcharge" label="Floor Surcharge Multiplier" name="floorSurchargeRate" typeRef="number" />
+      <output id="Output_EnvCess" label="Environmental Cess Rate" name="environmentalCessRate" typeRef="number" />
+
+      <!-- Rule 1: Small Residential (<= 2000 sq.ft., <= 2 floors) -->
+      <rule id="Rule_SmallResidential">
+        <description>R1: Standard low-density residential dwelling</description>
+        <inputEntry id="Entry_R1_Type"><text>"RESIDENTIAL"</text></inputEntry>
+        <inputEntry id="Entry_R1_Area"><text>&lt;= 2000</text></inputEntry>
+        <inputEntry id="Entry_R1_Floors"><text>&lt;= 2</text></inputEntry>
+        <outputEntry id="Out_R1_Rate"><text>25</text></outputEntry>
+        <outputEntry id="Out_R1_Scrutiny"><text>2000</text></outputEntry>
+        <outputEntry id="Out_R1_Floor"><text>0.00</text></outputEntry>
+        <outputEntry id="Out_R1_Cess"><text>0.02</text></outputEntry>
+      </rule>
+
+      <!-- Rule 2: Multi-Storey Residential (> 2000 sq.ft. or > 2 floors) -->
+      <rule id="Rule_MultiResidential">
+        <description>R2: High-density / multi-storey residential apartment</description>
+        <inputEntry id="Entry_R2_Type"><text>"RESIDENTIAL"</text></inputEntry>
+        <inputEntry id="Entry_R2_Area"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R2_Floors"><text>-</text></inputEntry>
+        <outputEntry id="Out_R2_Rate"><text>30</text></outputEntry>
+        <outputEntry id="Out_R2_Scrutiny"><text>3500</text></outputEntry>
+        <outputEntry id="Out_R2_Floor"><text>0.10</text></outputEntry>
+        <outputEntry id="Out_R2_Cess"><text>0.02</text></outputEntry>
+      </rule>
+
+      <!-- Rule 3: Small Commercial (<= 5000 sq.ft.) -->
+      <rule id="Rule_SmallCommercial">
+        <description>R3: Retail shop or small commercial complex</description>
+        <inputEntry id="Entry_R3_Type"><text>"COMMERCIAL"</text></inputEntry>
+        <inputEntry id="Entry_R3_Area"><text>&lt;= 5000</text></inputEntry>
+        <inputEntry id="Entry_R3_Floors"><text>-</text></inputEntry>
+        <outputEntry id="Out_R3_Rate"><text>50</text></outputEntry>
+        <outputEntry id="Out_R3_Scrutiny"><text>5000</text></outputEntry>
+        <outputEntry id="Out_R3_Floor"><text>0.15</text></outputEntry>
+        <outputEntry id="Out_R3_Cess"><text>0.03</text></outputEntry>
+      </rule>
+
+      <!-- Rule 4: Large Commercial (> 5000 sq.ft.) -->
+      <rule id="Rule_LargeCommercial">
+        <description>R4: Shopping mall, office park or hotel</description>
+        <inputEntry id="Entry_R4_Type"><text>"COMMERCIAL"</text></inputEntry>
+        <inputEntry id="Entry_R4_Area"><text>&gt; 5000</text></inputEntry>
+        <inputEntry id="Entry_R4_Floors"><text>-</text></inputEntry>
+        <outputEntry id="Out_R4_Rate"><text>65</text></outputEntry>
+        <outputEntry id="Out_R4_Scrutiny"><text>10000</text></outputEntry>
+        <outputEntry id="Out_R4_Floor"><text>0.20</text></outputEntry>
+        <outputEntry id="Out_R4_Cess"><text>0.04</text></outputEntry>
+      </rule>
+
+      <!-- Rule 5: Industrial -->
+      <rule id="Rule_Industrial">
+        <description>R5: Warehouse, manufacturing unit or industrial plant</description>
+        <inputEntry id="Entry_R5_Type"><text>"INDUSTRIAL"</text></inputEntry>
+        <inputEntry id="Entry_R5_Area"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R5_Floors"><text>-</text></inputEntry>
+        <outputEntry id="Out_R5_Rate"><text>40</text></outputEntry>
+        <outputEntry id="Out_R5_Scrutiny"><text>7500</text></outputEntry>
+        <outputEntry id="Out_R5_Floor"><text>0.15</text></outputEntry>
+        <outputEntry id="Out_R5_Cess"><text>0.05</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_PermitFee">
+      <dmndi:DMNShape id="DMNShape_FeeDecision" dmnElementRef="decision-permit-fee-matrix">
+        <dc:Bounds height="80" width="180" x="160" y="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

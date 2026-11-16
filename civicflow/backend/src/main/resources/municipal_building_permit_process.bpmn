@@ -189,14 +189,15 @@
       <bpmn:outgoing>Flow_To_EvaluateDecision</bpmn:outgoing>
     </bpmn:parallelGateway>
 
-    <!-- 9. Service Task: Evaluate All Department Decisions -->
-    <bpmn:serviceTask id="Task_EvaluateReviews" name="Evaluate Department Decisions">
+    <!-- 9. Business Rule Task (DMN): Evaluate All Department Decisions -->
+    <bpmn:businessRuleTask id="Task_EvaluateReviews" name="Evaluate Department Decisions (DMN)">
+      <bpmn:documentation>DMN Decision Table (decision-review-evaluation): Evaluates Fire, Water, Zoning, and Environmental decisions with Hit Policy FIRST.</bpmn:documentation>
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="evaluate-decisions-worker" />
+        <zeebe:calledDecision decisionId="decision-review-evaluation" resultVariable="reviewDecision" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_To_EvaluateDecision</bpmn:incoming>
       <bpmn:outgoing>Flow_To_Gateway_OverallDecision</bpmn:outgoing>
-    </bpmn:serviceTask>
+    </bpmn:businessRuleTask>
 
     <!-- 10. Exclusive Gateway: Overall Review Decision -->
     <bpmn:exclusiveGateway id="Gateway_OverallDecision" name="Overall Decision?">

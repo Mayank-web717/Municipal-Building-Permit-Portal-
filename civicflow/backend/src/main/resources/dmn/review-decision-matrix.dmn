@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:modeler="http://camunda.org/schema/modeler/1.0"
+             id="Definitions_ReviewDecisionEvaluation"
+             name="Department Review Decision Evaluation"
+             namespace="http://camunda.org/schema/1.0/dmn"
+             exporter="Camunda Modeler"
+             exporterVersion="5.49.0"
+             modeler:executionPlatform="Camunda Cloud"
+             modeler:executionPlatformVersion="8.8.0">
+
+  <decision id="decision-review-evaluation" name="Evaluate Department Review Decisions">
+    <description>Consolidates independent departmental reviews (Fire, Water, Zoning, Environmental). Hit Policy FIRST: evaluates top to bottom, first match wins.</description>
+    <decisionTable id="DecisionTable_ReviewEvaluation" hitPolicy="FIRST">
+      <input id="Input_FireDecision" label="Fire Safety Decision">
+        <inputExpression id="InputExpr_Fire" typeRef="string">
+          <text>fireReviewDecision</text>
+        </inputExpression>
+        <inputValues id="InputValues_Fire">
+          <text>"APPROVED","REVISION_REQUESTED","REJECTED"</text>
+        </inputValues>
+      </input>
+
+      <input id="Input_WaterDecision" label="Water Dept Decision">
+        <inputExpression id="InputExpr_Water" typeRef="string">
+          <text>waterReviewDecision</text>
+        </inputExpression>
+        <inputValues id="InputValues_Water">
+          <text>"APPROVED","REVISION_REQUESTED","REJECTED"</text>
+        </inputValues>
+      </input>
+
+      <input id="Input_ZoningDecision" label="Zoning Dept Decision">
+        <inputExpression id="InputExpr_Zoning" typeRef="string">
+          <text>zoningReviewDecision</text>
+        </inputExpression>
+        <inputValues id="InputValues_Zoning">
+          <text>"APPROVED","REVISION_REQUESTED","REJECTED"</text>
+        </inputValues>
+      </input>
+
+      <input id="Input_EnvDecision" label="Environmental Decision">
+        <inputExpression id="InputExpr_Env" typeRef="string">
+          <text>envReviewDecision</text>
+        </inputExpression>
+        <inputValues id="InputValues_Env">
+          <text>"APPROVED","REVISION_REQUESTED","REJECTED"</text>
+        </inputValues>
+      </input>
+
+      <output id="Output_ReviewDecision" label="Overall Consolidated Decision" name="reviewDecision" typeRef="string">
+        <outputValues id="OutputValues_ReviewDecision">
+          <text>"APPROVED","REVISION_REQUESTED","REJECTED"</text>
+        </outputValues>
+      </output>
+
+      <output id="Output_EvaluationSummary" label="Evaluation Summary" name="evaluationSummary" typeRef="string" />
+
+      <!-- Rule 1: Fire Department Rejection -->
+      <rule id="Rule_FireRejected">
+        <description>R1: Fire Safety clearance denied</description>
+        <inputEntry id="Entry_R1_Fire"><text>"REJECTED"</text></inputEntry>
+        <inputEntry id="Entry_R1_Water"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R1_Zoning"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R1_Env"><text>-</text></inputEntry>
+        <outputEntry id="Out_R1_Decision"><text>"REJECTED"</text></outputEntry>
+        <outputEntry id="Out_R1_Summary"><text>"Application rejected due to Fire Safety &amp; Life Safety non-compliance"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 2: Water Department Rejection -->
+      <rule id="Rule_WaterRejected">
+        <description>R2: Water/Sewerage clearance denied</description>
+        <inputEntry id="Entry_R2_Fire"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R2_Water"><text>"REJECTED"</text></inputEntry>
+        <inputEntry id="Entry_R2_Zoning"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R2_Env"><text>-</text></inputEntry>
+        <outputEntry id="Out_R2_Decision"><text>"REJECTED"</text></outputEntry>
+        <outputEntry id="Out_R2_Summary"><text>"Application rejected due to Water supply or Sewerage grid infeasibility"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 3: Zoning Department Rejection -->
+      <rule id="Rule_ZoningRejected">
+        <description>R3: Zoning/Land-use violation</description>
+        <inputEntry id="Entry_R3_Fire"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R3_Water"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R3_Zoning"><text>"REJECTED"</text></inputEntry>
+        <inputEntry id="Entry_R3_Env"><text>-</text></inputEntry>
+        <outputEntry id="Out_R3_Decision"><text>"REJECTED"</text></outputEntry>
+        <outputEntry id="Out_R3_Summary"><text>"Application rejected due to Master Plan zoning or setback violation"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 4: Environmental Rejection -->
+      <rule id="Rule_EnvRejected">
+        <description>R4: Environmental clearance denied</description>
+        <inputEntry id="Entry_R4_Fire"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R4_Water"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R4_Zoning"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R4_Env"><text>"REJECTED"</text></inputEntry>
+        <outputEntry id="Out_R4_Decision"><text>"REJECTED"</text></outputEntry>
+        <outputEntry id="Out_R4_Summary"><text>"Application rejected due to environmental buffer or green cover violation"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 5: Fire Revision Requested -->
+      <rule id="Rule_FireRevision">
+        <description>R5: Fire modifications requested</description>
+        <inputEntry id="Entry_R5_Fire"><text>"REVISION_REQUESTED"</text></inputEntry>
+        <inputEntry id="Entry_R5_Water"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R5_Zoning"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R5_Env"><text>-</text></inputEntry>
+        <outputEntry id="Out_R5_Decision"><text>"REVISION_REQUESTED"</text></outputEntry>
+        <outputEntry id="Out_R5_Summary"><text>"Applicant must submit modified drawings resolving Fire Safety comments"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 6: Water Revision Requested -->
+      <rule id="Rule_WaterRevision">
+        <description>R6: Plumbing/septic revision</description>
+        <inputEntry id="Entry_R6_Fire"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R6_Water"><text>"REVISION_REQUESTED"</text></inputEntry>
+        <inputEntry id="Entry_R6_Zoning"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R6_Env"><text>-</text></inputEntry>
+        <outputEntry id="Out_R6_Decision"><text>"REVISION_REQUESTED"</text></outputEntry>
+        <outputEntry id="Out_R6_Summary"><text>"Applicant must submit revised plumbing, drainage or STP scheme"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 7: Zoning Revision Requested -->
+      <rule id="Rule_ZoningRevision">
+        <description>R7: Setback/FAR revision</description>
+        <inputEntry id="Entry_R7_Fire"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R7_Water"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R7_Zoning"><text>"REVISION_REQUESTED"</text></inputEntry>
+        <inputEntry id="Entry_R7_Env"><text>-</text></inputEntry>
+        <outputEntry id="Out_R7_Decision"><text>"REVISION_REQUESTED"</text></outputEntry>
+        <outputEntry id="Out_R7_Summary"><text>"Applicant must modify building setbacks or FAR drawings"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 8: Environmental Revision Requested -->
+      <rule id="Rule_EnvRevision">
+        <description>R8: Eco plan revision</description>
+        <inputEntry id="Entry_R8_Fire"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R8_Water"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R8_Zoning"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R8_Env"><text>"REVISION_REQUESTED"</text></inputEntry>
+        <outputEntry id="Out_R8_Decision"><text>"REVISION_REQUESTED"</text></outputEntry>
+        <outputEntry id="Out_R8_Summary"><text>"Applicant must submit revised green cover or waste management scheme"</text></outputEntry>
+      </rule>
+
+      <!-- Rule 9: All Four Approved -->
+      <rule id="Rule_AllApproved">
+        <description>R9: All departments granted clearance</description>
+        <inputEntry id="Entry_R9_Fire"><text>"APPROVED"</text></inputEntry>
+        <inputEntry id="Entry_R9_Water"><text>"APPROVED"</text></inputEntry>
+        <inputEntry id="Entry_R9_Zoning"><text>"APPROVED"</text></inputEntry>
+        <inputEntry id="Entry_R9_Env"><text>"APPROVED"</text></inputEntry>
+        <outputEntry id="Out_R9_Decision"><text>"APPROVED"</text></outputEntry>
+        <outputEntry id="Out_R9_Summary"><text>"All four municipal departments granted technical clearance. Proceeding to fee calculation."</text></outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_ReviewEvaluation">
+      <dmndi:DMNShape id="DMNShape_Decision" dmnElementRef="decision-review-evaluation">
+        <dc:Bounds height="80" width="180" x="160" y="80" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>
