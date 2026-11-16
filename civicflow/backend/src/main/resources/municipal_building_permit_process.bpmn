@@ -43,10 +43,20 @@
       <bpmn:outgoing>Flow_From_DocCorrection</bpmn:outgoing>
     </bpmn:userTask>
 
-    <!-- 4. Service Task: Land Registry & GIS Verification -->
-    <bpmn:serviceTask id="Task_LandRegistryVerification" name="Land Registry &amp; GIS Verification">
+    <!-- 4. REST API Connector Task: Land Registry & GIS Verification -->
+    <bpmn:serviceTask id="Task_LandRegistryVerification" name="Land Registry &amp; GIS REST API Verification">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="land-registry-worker" />
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="noAuth" target="authentication.type" />
+          <zeebe:input source="GET" target="method" />
+          <zeebe:input source="= &quot;http://localhost:8081/api/land-registry/verify/&quot; + surveyNumber" target="url" />
+          <zeebe:input source="20" target="connectionTimeoutInSeconds" />
+          <zeebe:input source="20" target="readTimeoutInSeconds" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="resultExpression" value="={landRegistryValid: body.valid, landRegistryMessage: body.message, ownershipStatus: body.ownershipStatus}" />
+        </zeebe:taskHeaders>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_DocValid_Yes</bpmn:incoming>
       <bpmn:outgoing>Flow_To_Gateway_LandValid</bpmn:outgoing>

@@ -93,41 +93,76 @@ The system has been verified against the 5 project scenarios:
 
 ---
 
-## 5. Startup & Running Instructions
+## 5. REST API Integration in BPMN
+
+The Land Registry & GIS Verification step in `municipal_building_permit_process.bpmn` uses Camunda 8's native **REST Outbound Connector** (`io.camunda:http-json:1`):
+* **BPMN Task ID**: `Task_LandRegistryVerification`
+* **Task Type**: `io.camunda:http-json:1` (Camunda 8 Outbound REST Connector)
+* **HTTP Method**: `GET`
+* **Target Endpoint**: `http://localhost:8081/api/land-registry/verify/{surveyNumber}`
+* **Response Mapping**: Extracted via FEEL expression:
+  ```feel
+  ={landRegistryValid: body.valid, landRegistryMessage: body.message, ownershipStatus: body.ownershipStatus}
+  ```
+* **Routing**: The downstream Exclusive Gateway `Gateway_LandVerification` evaluates `= landRegistryValid = true` or `false` dynamically from the REST response.
+
+---
+
+## 6. Startup & Running Instructions (Complete Guide)
 
 ### Prerequisites
-- JDK 21+ (`java -version`)
-- Maven 3.9+ (`mvn -version`)
-- Node.js 18+ & npm (`node -v`)
-- MySQL 8.0 on port 3306
-- Camunda 8 Run (c8run) on port 8080 / 26500
+- **JDK 21+** (`java -version`)
+- **Maven 3.9+** (`mvn -version`)
+- **Node.js 18+ & npm** (`node -v`)
+- **MySQL 8.0** running on `localhost:3306`
+- **Camunda 8 Run (c8run)** on port `8080` (Operate / Tasklist) and port `26500` (Zeebe gRPC)
+
+---
 
 ### Step 1: Database Setup
+1. Open PowerShell or Command Prompt.
+2. Initialize schema and seed data into MySQL:
 ```bash
-mysql -u root -p < database/schema.sql
-mysql -u root -p < database/seed.sql
+mysql -u root -p civicflow_db < database/schema.sql
+mysql -u root -p civicflow_db < database/seed.sql
 ```
+*(Default configured password in `application.properties`: `Dhara@123` or update to your MySQL root password).*
 
-### Step 2: Start Camunda 8 Run
-Navigate to your Camunda 8 distribution directory:
+---
+
+### Step 2: Start Camunda 8 Run Engine
+Open a dedicated terminal and start the Camunda 8 local distribution:
 ```bash
-c8run.exe start
+cd "C:\Users\mayan\Downloads\camunda8-run-8.8-windows-x86_64\c8run-8.8.32"
+.\c8run.exe start
 ```
-Access Camunda Operate at: `http://localhost:8080/operate` (user: `demo` / `demo`).
+* **Camunda Operate UI**: `http://localhost:8080/operate` (Credentials: `demo` / `demo`)
+* **Camunda Tasklist UI**: `http://localhost:8080/tasklist`
+* **Zeebe gRPC Gateway**: `localhost:26500`
+* **Inbound Connectors API**: `http://localhost:8086/`
+
+---
 
 ### Step 3: Start Spring Boot Backend
+Open a second terminal:
 ```bash
-cd backend
+cd "D:\Workflow Project\civicflow\backend"
 mvn clean package -DskipTests
 java -jar target/civicflow-backend-1.0.0.jar
 ```
-Backend runs on `http://localhost:8081/api`.
+* **Backend REST API**: `http://localhost:8081/api`
+* **Mock Land Registry GIS REST API**: `http://localhost:8081/api/land-registry/verify/{surveyNumber}`
 
-### Step 4: Start Frontend
+---
+
+### Step 4: Start React Frontend
+Open a third terminal:
 ```bash
-cd frontend
+cd "D:\Workflow Project\civicflow\frontend"
 npm install
 npm run dev -- --port 3000
 ```
-Open your browser at `http://localhost:3000`.
+Open your browser at: **`http://localhost:3000`**
+
+Sign in with any of the demo accounts (`ar_vikram`, `fire_officer`, `admin`) using password: `password123`.
 
