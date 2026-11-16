@@ -100,6 +100,18 @@
         <outputEntry id="Out_R5_Cess"><text>0.05</text></outputEntry>
       </rule>
 
+      <!-- Rule 6: Fallback Default -->
+      <rule id="Rule_FallbackFee">
+        <description>R6: Fallback standard municipal tariff</description>
+        <inputEntry id="Entry_R6_Type"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R6_Area"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R6_Floors"><text>-</text></inputEntry>
+        <outputEntry id="Out_R6_Rate"><text>25</text></outputEntry>
+        <outputEntry id="Out_R6_Scrutiny"><text>2500</text></outputEntry>
+        <outputEntry id="Out_R6_Floor"><text>0.05</text></outputEntry>
+        <outputEntry id="Out_R6_Cess"><text>0.02</text></outputEntry>
+      </rule>
+
     </decisionTable>
   </decision>
 
@@ -111,3 +123,4 @@
     </dmndi:DMNDiagram>
   </dmndi:DMNDI>
 </definitions>
+

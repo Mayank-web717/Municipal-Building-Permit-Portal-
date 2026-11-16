@@ -13,20 +13,26 @@
   <bpmn:process id="Process_MunicipalFeeCalculation" name="Municipal Fee Calculation Process" isExecutable="true">
 
     <bpmn:startEvent id="Start_FeeCalculation" name="Fee Calculation Requested">
-      <bpmn:outgoing>Flow_To_DmnMatrix</bpmn:outgoing>
+      <bpmn:outgoing>Flow_To_FeeDmn</bpmn:outgoing>
     </bpmn:startEvent>
 
-    <!-- 1. DMN Business Rule Task: Query Tariff Rate Matrix -->
+    <!-- 1. DMN Business Rule Task: Tariff Matrix -->
     <bpmn:businessRuleTask id="Task_EvaluateFeeMatrix" name="Evaluate Municipal Tariff Matrix (DMN)">
-      <bpmn:documentation>DMN Decision Table (decision-permit-fee-matrix): Looks up baseRatePerSqFt, scrutinyFee, floorSurchargeRate, and environmentalCessRate.</bpmn:documentation>
+      <bpmn:documentation>DMN decision-permit-fee-matrix: Computes baseRatePerSqFt, scrutinyFee, floorSurchargeRate, and environmentalCessRate.</bpmn:documentation>
       <bpmn:extensionElements>
-        <zeebe:calledDecision decisionId="decision-permit-fee-matrix" resultVariable="feeMatrix" />
+        <zeebe:calledDecision decisionId="decision-permit-fee-matrix" resultVariable="feeMatrixResult" />
+        <zeebe:ioMapping>
+          <zeebe:output source="=feeMatrixResult.baseRatePerSqFt" target="baseRatePerSqFt" />
+          <zeebe:output source="=feeMatrixResult.scrutinyFee" target="scrutinyFee" />
+          <zeebe:output source="=feeMatrixResult.floorSurchargeRate" target="floorSurchargeRate" />
+          <zeebe:output source="=feeMatrixResult.environmentalCessRate" target="environmentalCessRate" />
+        </zeebe:ioMapping>
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_To_DmnMatrix</bpmn:incoming>
+      <bpmn:incoming>Flow_To_FeeDmn</bpmn:incoming>
       <bpmn:outgoing>Flow_To_FeeWorker</bpmn:outgoing>
     </bpmn:businessRuleTask>
 
-    <!-- 2. Service Task: Consolidate Final Fee -->
+    <!-- 2. Service Task: Final Fee Calculation Worker -->
     <bpmn:serviceTask id="Task_ComputeMunicipalFee" name="Consolidate Final Statutory Fee">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="fee-calculation-worker" />
@@ -39,7 +45,7 @@
       <bpmn:incoming>Flow_FeeCalculated</bpmn:incoming>
     </bpmn:endEvent>
 
-    <bpmn:sequenceFlow id="Flow_To_DmnMatrix" sourceRef="Start_FeeCalculation" targetRef="Task_EvaluateFeeMatrix" />
+    <bpmn:sequenceFlow id="Flow_To_FeeDmn" sourceRef="Start_FeeCalculation" targetRef="Task_EvaluateFeeMatrix" />
     <bpmn:sequenceFlow id="Flow_To_FeeWorker" sourceRef="Task_EvaluateFeeMatrix" targetRef="Task_ComputeMunicipalFee" />
     <bpmn:sequenceFlow id="Flow_FeeCalculated" sourceRef="Task_ComputeMunicipalFee" targetRef="End_FeeCalculation" />
 
@@ -53,7 +59,7 @@
           <dc:Bounds x="141" y="145" width="79" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Shape_Task_DmnMatrix" bpmnElement="Task_EvaluateFeeMatrix">
+      <bpmndi:BPMNShape id="Shape_Task_FeeDmn" bpmnElement="Task_EvaluateFeeMatrix">
         <dc:Bounds x="250" y="80" width="140" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_Task_Fee" bpmnElement="Task_ComputeMunicipalFee">
@@ -65,7 +71,7 @@
           <dc:Bounds x="611" y="145" width="79" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Edge_To_Dmn" bpmnElement="Flow_To_DmnMatrix">
+      <bpmndi:BPMNEdge id="Edge_To_FeeDmn" bpmnElement="Flow_To_FeeDmn">
         <di:waypoint x="198" y="120" />
         <di:waypoint x="250" y="120" />
       </bpmndi:BPMNEdge>

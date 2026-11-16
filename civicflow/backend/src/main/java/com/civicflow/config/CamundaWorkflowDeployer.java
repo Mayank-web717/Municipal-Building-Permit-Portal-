@@ -27,9 +27,9 @@ public class CamundaWorkflowDeployer implements ApplicationRunner {
             DeployResourceCommandStep1.DeployResourceCommandStep2 deployCmd = null;
             PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
             
-            Resource[] bpmns = resolver.getResources("classpath:*.bpmn");
-            Resource[] dmns = resolver.getResources("classpath:dmn/*.dmn");
-            Resource[] forms = resolver.getResources("classpath:forms/*.form");
+            Resource[] bpmns = resolver.getResources("classpath*:*.bpmn");
+            Resource[] dmns = resolver.getResources("classpath*:dmn/*.dmn");
+            Resource[] forms = resolver.getResources("classpath*:forms/*.form");
 
             int count = 0;
             for (Resource r : bpmns) {

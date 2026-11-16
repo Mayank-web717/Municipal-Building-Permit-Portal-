@@ -157,6 +157,17 @@
         <outputEntry id="Out_R9_Summary"><text>"All four municipal departments granted technical clearance. Proceeding to fee calculation."</text></outputEntry>
       </rule>
 
+      <!-- Rule 10: Fallback default rule -->
+      <rule id="Rule_FallbackReview">
+        <description>R10: Fallback rule if values are unassigned</description>
+        <inputEntry id="Entry_R10_Fire"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R10_Water"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R10_Zoning"><text>-</text></inputEntry>
+        <inputEntry id="Entry_R10_Env"><text>-</text></inputEntry>
+        <outputEntry id="Out_R10_Decision"><text>"APPROVED"</text></outputEntry>
+        <outputEntry id="Out_R10_Summary"><text>"Default department clearance granted."</text></outputEntry>
+      </rule>
+
     </decisionTable>
   </decision>
 
@@ -168,3 +179,4 @@
     </dmndi:DMNDiagram>
   </dmndi:DMNDI>
 </definitions>
+

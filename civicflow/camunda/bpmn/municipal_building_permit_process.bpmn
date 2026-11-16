@@ -1,23 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
-                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
-                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
-                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
-                  xmlns:zeebe="http://camunda.org/schema/zeebe/1.0"
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  id="Definitions_MunicipalBuildingPermit"
-                  targetNamespace="http://bpmn.io/schema/bpmn"
-                  exporter="Camunda Modeler"
-                  exporterVersion="5.49.0">
-
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_MunicipalBuildingPermit" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.49.0">
   <bpmn:process id="Process_MunicipalBuildingPermit" name="Municipal Building Permit Approval Process" isExecutable="true">
-
-    <!-- 1. Start Event -->
     <bpmn:startEvent id="StartEvent_ApplicationSubmitted" name="Application Submitted">
       <bpmn:outgoing>Flow_To_DocVerification</bpmn:outgoing>
     </bpmn:startEvent>
-
-    <!-- 2. Service Task: Document Verification -->
     <bpmn:serviceTask id="Task_DocumentVerification" name="Document Verification">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="document-verification-worker" />
@@ -26,15 +12,11 @@
       <bpmn:incoming>Flow_From_DocCorrection</bpmn:incoming>
       <bpmn:outgoing>Flow_To_Gateway_DocValid</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <!-- 3. Gateway: Check Document Verification -->
     <bpmn:exclusiveGateway id="Gateway_DocVerification" name="Documents Valid?">
       <bpmn:incoming>Flow_To_Gateway_DocValid</bpmn:incoming>
       <bpmn:outgoing>Flow_DocValid_Yes</bpmn:outgoing>
       <bpmn:outgoing>Flow_DocValid_No</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-
-    <!-- User Task: Missing Documents Correction -->
     <bpmn:userTask id="Task_CorrectMissingDocuments" name="Applicant Corrects Missing Documents">
       <bpmn:documentation>Applicant re-uploads required documents or certificates that were missing or invalid.</bpmn:documentation>
       <bpmn:extensionElements>
@@ -46,20 +28,14 @@
       <bpmn:incoming>Flow_DocValid_No</bpmn:incoming>
       <bpmn:outgoing>Flow_From_DocCorrection</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- 4. Official Camunda 8 REST Outbound Connector Task: Land Registry & GIS Verification -->
-    <bpmn:serviceTask id="Task_LandRegistryVerification" 
-                      name="Verify Land Registry (REST API)" 
-                      zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" 
-                      zeebe:modelerTemplateVersion="11"
-                      zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+    <bpmn:serviceTask id="Task_LandRegistryVerification" name="Verify Land Registry (REST API)" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="11" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
       <bpmn:documentation>REST Outbound Connector: GET to Land Registry GIS API to verify survey number and ownership status.</bpmn:documentation>
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
         <zeebe:ioMapping>
           <zeebe:input source="noAuth" target="authentication.type" />
           <zeebe:input source="GET" target="method" />
-          <zeebe:input source="= &quot;http://localhost:8081/api/land-registry/verify/&quot; + surveyNumber" target="url" />
+          <zeebe:input source="= &#34;http://localhost:8081/api/land-registry/verify/&#34; + surveyNumber" target="url" />
           <zeebe:input source="20" target="connectionTimeoutInSeconds" />
           <zeebe:input source="20" target="readTimeoutInSeconds" />
         </zeebe:ioMapping>
@@ -73,20 +49,14 @@
       <bpmn:incoming>Flow_DocValid_Yes</bpmn:incoming>
       <bpmn:outgoing>Flow_To_Gateway_LandValid</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <!-- 5. Gateway: Land Ownership / Zoning Valid? -->
     <bpmn:exclusiveGateway id="Gateway_LandVerification" name="Land / Survey Valid?">
       <bpmn:incoming>Flow_To_Gateway_LandValid</bpmn:incoming>
       <bpmn:outgoing>Flow_LandValid_Yes</bpmn:outgoing>
       <bpmn:outgoing>Flow_LandValid_No</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-
-    <!-- End Event: Rejected by Land Registry -->
     <bpmn:endEvent id="EndEvent_LandRejected" name="Rejected (Land / Survey Invalid)">
       <bpmn:incoming>Flow_LandValid_No</bpmn:incoming>
     </bpmn:endEvent>
-
-    <!-- 6. Parallel Gateway: Split to 4 Departments -->
     <bpmn:parallelGateway id="Gateway_ParallelReviewsSplit" name="Distribute to 4 Departments">
       <bpmn:incoming>Flow_LandValid_Yes</bpmn:incoming>
       <bpmn:incoming>Flow_RevisionSubmitted</bpmn:incoming>
@@ -95,8 +65,6 @@
       <bpmn:outgoing>Flow_To_ZoningReview</bpmn:outgoing>
       <bpmn:outgoing>Flow_To_EnvReview</bpmn:outgoing>
     </bpmn:parallelGateway>
-
-    <!-- 7A. Fire Safety Department Review (Subprocess with Timer Escalation) -->
     <bpmn:subProcess id="SubProcess_FireReview" name="Fire Safety Department Review">
       <bpmn:incoming>Flow_To_FireReview</bpmn:incoming>
       <bpmn:outgoing>Flow_From_FireSubprocess</bpmn:outgoing>
@@ -120,15 +88,12 @@
       <bpmn:sequenceFlow id="Flow_Inside_Fire" sourceRef="Start_FireReview" targetRef="Task_FireSafetyReview" />
       <bpmn:sequenceFlow id="Flow_Inside_Fire_End" sourceRef="Task_FireSafetyReview" targetRef="End_FireReview" />
     </bpmn:subProcess>
-
-    <!-- Timer Boundary Event for Fire Review Timeout / Escalation -->
     <bpmn:boundaryEvent id="Timer_FireEscalation" name="Review Timeout Escalation" cancelActivity="false" attachedToRef="SubProcess_FireReview">
       <bpmn:outgoing>Flow_FireEscalation</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerDef_Fire">
         <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT2M</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
-
     <bpmn:serviceTask id="Task_NotifyEscalation" name="Escalate Overdue Department to Admin">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="department-escalation-worker" />
@@ -136,12 +101,9 @@
       <bpmn:incoming>Flow_FireEscalation</bpmn:incoming>
       <bpmn:outgoing>Flow_End_Escalation</bpmn:outgoing>
     </bpmn:serviceTask>
-
     <bpmn:endEvent id="End_EscalationLogged" name="Escalation Logged">
       <bpmn:incoming>Flow_End_Escalation</bpmn:incoming>
     </bpmn:endEvent>
-
-    <!-- 7B. Water Department Review -->
     <bpmn:userTask id="Task_WaterReview" name="Water Department Review">
       <bpmn:documentation>Water Supply and Sewerage Board verifies pipeline connection feasibility, STP, and rainwater harvesting.</bpmn:documentation>
       <bpmn:extensionElements>
@@ -153,8 +115,6 @@
       <bpmn:incoming>Flow_To_WaterReview</bpmn:incoming>
       <bpmn:outgoing>Flow_From_WaterReview</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- 7C. Zoning Department Review -->
     <bpmn:userTask id="Task_ZoningReview" name="Zoning Department Review">
       <bpmn:documentation>Town Planning Officer verifies Floor Area Ratio (FAR), road setbacks, and master plan land use.</bpmn:documentation>
       <bpmn:extensionElements>
@@ -166,8 +126,6 @@
       <bpmn:incoming>Flow_To_ZoningReview</bpmn:incoming>
       <bpmn:outgoing>Flow_From_ZoningReview</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- 7D. Environmental Review -->
     <bpmn:userTask id="Task_EnvReview" name="Environmental Review">
       <bpmn:documentation>Environmental Officer verifies green landscape area, solid waste management, and solar provisions.</bpmn:documentation>
       <bpmn:extensionElements>
@@ -179,8 +137,6 @@
       <bpmn:incoming>Flow_To_EnvReview</bpmn:incoming>
       <bpmn:outgoing>Flow_From_EnvReview</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- 8. Parallel Gateway: Join 4 Departments -->
     <bpmn:parallelGateway id="Gateway_ParallelReviewsJoin" name="Join Reviews">
       <bpmn:incoming>Flow_From_FireSubprocess</bpmn:incoming>
       <bpmn:incoming>Flow_From_WaterReview</bpmn:incoming>
@@ -188,31 +144,27 @@
       <bpmn:incoming>Flow_From_EnvReview</bpmn:incoming>
       <bpmn:outgoing>Flow_To_EvaluateDecision</bpmn:outgoing>
     </bpmn:parallelGateway>
-
-    <!-- 9. Business Rule Task (DMN): Evaluate All Department Decisions -->
     <bpmn:businessRuleTask id="Task_EvaluateReviews" name="Evaluate Department Decisions (DMN)">
       <bpmn:documentation>DMN Decision Table (decision-review-evaluation): Evaluates Fire, Water, Zoning, and Environmental decisions with Hit Policy FIRST.</bpmn:documentation>
       <bpmn:extensionElements>
-        <zeebe:calledDecision decisionId="decision-review-evaluation" resultVariable="reviewDecision" />
+        <zeebe:calledDecision decisionId="decision-review-evaluation" resultVariable="decisionResult" />
+        <zeebe:ioMapping>
+          <zeebe:output source="=decisionResult.reviewDecision" target="reviewDecision" />
+          <zeebe:output source="=decisionResult.evaluationSummary" target="evaluationSummary" />
+        </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_To_EvaluateDecision</bpmn:incoming>
       <bpmn:outgoing>Flow_To_Gateway_OverallDecision</bpmn:outgoing>
     </bpmn:businessRuleTask>
-
-    <!-- 10. Exclusive Gateway: Overall Review Decision -->
     <bpmn:exclusiveGateway id="Gateway_OverallDecision" name="Overall Decision?">
       <bpmn:incoming>Flow_To_Gateway_OverallDecision</bpmn:incoming>
       <bpmn:outgoing>Flow_Decision_Approved</bpmn:outgoing>
       <bpmn:outgoing>Flow_Decision_Revision</bpmn:outgoing>
       <bpmn:outgoing>Flow_Decision_Rejected</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-
-    <!-- End Event: Departmental Rejection -->
     <bpmn:endEvent id="EndEvent_DeptRejected" name="Application Rejected">
       <bpmn:incoming>Flow_Decision_Rejected</bpmn:incoming>
     </bpmn:endEvent>
-
-    <!-- Revision Subprocess / User Task -->
     <bpmn:userTask id="Task_ApplicantRevision" name="Applicant Uploads Revised Blueprint">
       <bpmn:documentation>Applicant updates and re-uploads architectural drawings to resolve department revision requests.</bpmn:documentation>
       <bpmn:extensionElements>
@@ -224,8 +176,6 @@
       <bpmn:incoming>Flow_Decision_Revision</bpmn:incoming>
       <bpmn:outgoing>Flow_RevisionSubmitted</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- 11. Call Activity: Municipal Fee Calculation Process -->
     <bpmn:callActivity id="CallActivity_FeeCalculation" name="Calculate Municipal Permit Fee">
       <bpmn:extensionElements>
         <zeebe:calledElement processId="Process_MunicipalFeeCalculation" propagateAllChildVariables="true" />
@@ -233,8 +183,6 @@
       <bpmn:incoming>Flow_Decision_Approved</bpmn:incoming>
       <bpmn:outgoing>Flow_To_PaymentTask</bpmn:outgoing>
     </bpmn:callActivity>
-
-    <!-- 12. User Task: Payment by Citizen / Architect -->
     <bpmn:userTask id="Task_CitizenPayment" name="Citizen / Architect Payment">
       <bpmn:documentation>Citizen or Architect views calculated municipal fees and remits statutory payment in Tasklist or Web Portal.</bpmn:documentation>
       <bpmn:extensionElements>
@@ -247,32 +195,23 @@
       <bpmn:incoming>Flow_Payment_Failed</bpmn:incoming>
       <bpmn:outgoing>Flow_To_Gateway_Payment</bpmn:outgoing>
     </bpmn:userTask>
-
-    <!-- 13. Exclusive Gateway: Payment Status -->
     <bpmn:exclusiveGateway id="Gateway_PaymentStatus" name="Payment Success?">
       <bpmn:incoming>Flow_To_Gateway_Payment</bpmn:incoming>
       <bpmn:outgoing>Flow_Payment_Success</bpmn:outgoing>
       <bpmn:outgoing>Flow_Payment_Failed</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-
-    <!-- 14. Service Task: Generate Digital Permit & PDF -->
-    <bpmn:serviceTask id="Task_GeneratePermit" name="Generate Digital Permit &amp; PDF">
+    <bpmn:serviceTask id="Task_GeneratePermit" name="Generate Digital Permit &#38; PDF">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="permit-generation-worker" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_Payment_Success</bpmn:incoming>
       <bpmn:outgoing>Flow_To_EndSuccess</bpmn:outgoing>
     </bpmn:serviceTask>
-
-    <!-- 15. Final End Event -->
     <bpmn:endEvent id="EndEvent_PermitIssued" name="Permit Issued Successfully">
       <bpmn:incoming>Flow_To_EndSuccess</bpmn:incoming>
     </bpmn:endEvent>
-
-    <!-- Sequence Flow Connections -->
     <bpmn:sequenceFlow id="Flow_To_DocVerification" sourceRef="StartEvent_ApplicationSubmitted" targetRef="Task_DocumentVerification" />
     <bpmn:sequenceFlow id="Flow_To_Gateway_DocValid" sourceRef="Task_DocumentVerification" targetRef="Gateway_DocVerification" />
-    
     <bpmn:sequenceFlow id="Flow_DocValid_Yes" name="Valid" sourceRef="Gateway_DocVerification" targetRef="Task_LandRegistryVerification">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= documentsValid = true</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -280,7 +219,6 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= documentsValid = false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_From_DocCorrection" sourceRef="Task_CorrectMissingDocuments" targetRef="Task_DocumentVerification" />
-
     <bpmn:sequenceFlow id="Flow_To_Gateway_LandValid" sourceRef="Task_LandRegistryVerification" targetRef="Gateway_LandVerification" />
     <bpmn:sequenceFlow id="Flow_LandValid_Yes" name="Valid Title" sourceRef="Gateway_LandVerification" targetRef="Gateway_ParallelReviewsSplit">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= landRegistryValid = true</bpmn:conditionExpression>
@@ -288,23 +226,18 @@
     <bpmn:sequenceFlow id="Flow_LandValid_No" name="Disputed" sourceRef="Gateway_LandVerification" targetRef="EndEvent_LandRejected">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= landRegistryValid = false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-
     <bpmn:sequenceFlow id="Flow_To_FireReview" sourceRef="Gateway_ParallelReviewsSplit" targetRef="SubProcess_FireReview" />
     <bpmn:sequenceFlow id="Flow_To_WaterReview" sourceRef="Gateway_ParallelReviewsSplit" targetRef="Task_WaterReview" />
     <bpmn:sequenceFlow id="Flow_To_ZoningReview" sourceRef="Gateway_ParallelReviewsSplit" targetRef="Task_ZoningReview" />
     <bpmn:sequenceFlow id="Flow_To_EnvReview" sourceRef="Gateway_ParallelReviewsSplit" targetRef="Task_EnvReview" />
-
     <bpmn:sequenceFlow id="Flow_FireEscalation" sourceRef="Timer_FireEscalation" targetRef="Task_NotifyEscalation" />
     <bpmn:sequenceFlow id="Flow_End_Escalation" sourceRef="Task_NotifyEscalation" targetRef="End_EscalationLogged" />
-
     <bpmn:sequenceFlow id="Flow_From_FireSubprocess" sourceRef="SubProcess_FireReview" targetRef="Gateway_ParallelReviewsJoin" />
     <bpmn:sequenceFlow id="Flow_From_WaterReview" sourceRef="Task_WaterReview" targetRef="Gateway_ParallelReviewsJoin" />
     <bpmn:sequenceFlow id="Flow_From_ZoningReview" sourceRef="Task_ZoningReview" targetRef="Gateway_ParallelReviewsJoin" />
     <bpmn:sequenceFlow id="Flow_From_EnvReview" sourceRef="Task_EnvReview" targetRef="Gateway_ParallelReviewsJoin" />
-
     <bpmn:sequenceFlow id="Flow_To_EvaluateDecision" sourceRef="Gateway_ParallelReviewsJoin" targetRef="Task_EvaluateReviews" />
     <bpmn:sequenceFlow id="Flow_To_Gateway_OverallDecision" sourceRef="Task_EvaluateReviews" targetRef="Gateway_OverallDecision" />
-
     <bpmn:sequenceFlow id="Flow_Decision_Approved" name="All Approved" sourceRef="Gateway_OverallDecision" targetRef="CallActivity_FeeCalculation">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= reviewDecision = "APPROVED"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -314,9 +247,7 @@
     <bpmn:sequenceFlow id="Flow_Decision_Rejected" name="Rejected" sourceRef="Gateway_OverallDecision" targetRef="EndEvent_DeptRejected">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= reviewDecision = "REJECTED"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-
     <bpmn:sequenceFlow id="Flow_RevisionSubmitted" sourceRef="Task_ApplicantRevision" targetRef="Gateway_ParallelReviewsSplit" />
-
     <bpmn:sequenceFlow id="Flow_To_PaymentTask" sourceRef="CallActivity_FeeCalculation" targetRef="Task_CitizenPayment" />
     <bpmn:sequenceFlow id="Flow_To_Gateway_Payment" sourceRef="Task_CitizenPayment" targetRef="Gateway_PaymentStatus" />
     <bpmn:sequenceFlow id="Flow_Payment_Success" name="Paid" sourceRef="Gateway_PaymentStatus" targetRef="Task_GeneratePermit">
@@ -325,394 +256,285 @@
     <bpmn:sequenceFlow id="Flow_Payment_Failed" name="Failed" sourceRef="Gateway_PaymentStatus" targetRef="Task_CitizenPayment">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= paymentSuccess = false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-
     <bpmn:sequenceFlow id="Flow_To_EndSuccess" sourceRef="Task_GeneratePermit" targetRef="EndEvent_PermitIssued" />
-
   </bpmn:process>
-
-  <!-- Clean, Perfectly Aligned BPMNDiagram with Neat Coordinates & Non-Overlapping Labels -->
   <bpmndi:BPMNDiagram id="BPMNDiagram_MunicipalBuildingPermit">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_MunicipalBuildingPermit">
-
-      <!-- 1. Start Event -->
       <bpmndi:BPMNShape id="Shape_StartEvent" bpmnElement="StartEvent_ApplicationSubmitted">
-        <dc:Bounds x="150" y="242" width="36" height="36" />
+        <dc:Bounds x="150" y="312" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="132" y="285" width="72" height="27" />
+          <dc:Bounds x="141" y="355" width="54" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- 2. Document Verification -->
       <bpmndi:BPMNShape id="Shape_DocVerification" bpmnElement="Task_DocumentVerification">
-        <dc:Bounds x="240" y="220" width="120" height="80" />
+        <dc:Bounds x="240" y="290" width="120" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- 3. Gateway: Documents Valid? -->
       <bpmndi:BPMNShape id="Shape_Gateway_DocVerification" bpmnElement="Gateway_DocVerification" isMarkerVisible="true">
-        <dc:Bounds x="420" y="235" width="50" height="50" />
+        <dc:Bounds x="420" y="305" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="407" y="292" width="76" height="27" />
+          <dc:Bounds x="401" y="362" width="89" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- User Task: Missing Documents -->
       <bpmndi:BPMNShape id="Shape_Task_CorrectMissingDocuments" bpmnElement="Task_CorrectMissingDocuments">
-        <dc:Bounds x="385" y="60" width="120" height="80" />
+        <dc:Bounds x="385" y="130" width="120" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- 4. REST Outbound Connector: Land Registry -->
       <bpmndi:BPMNShape id="Shape_LandRegistryVerification" bpmnElement="Task_LandRegistryVerification">
-        <dc:Bounds x="540" y="220" width="130" height="80" />
+        <dc:Bounds x="540" y="290" width="130" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- 5. Gateway: Land Valid? -->
       <bpmndi:BPMNShape id="Shape_Gateway_LandVerification" bpmnElement="Gateway_LandVerification" isMarkerVisible="true">
-        <dc:Bounds x="730" y="235" width="50" height="50" />
+        <dc:Bounds x="730" y="305" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="717" y="292" width="76" height="27" />
+          <dc:Bounds x="721" y="362" width="68" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Land Rejected End Event -->
       <bpmndi:BPMNShape id="Shape_EndEvent_LandRejected" bpmnElement="EndEvent_LandRejected">
-        <dc:Bounds x="737" y="380" width="36" height="36" />
+        <dc:Bounds x="737" y="450" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="715" y="423" width="80" height="27" />
+          <dc:Bounds x="715" y="493" width="81" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- 6. Parallel Split Gateway -->
       <bpmndi:BPMNShape id="Shape_Gateway_ParallelSplit" bpmnElement="Gateway_ParallelReviewsSplit">
-        <dc:Bounds x="850" y="235" width="50" height="50" />
+        <dc:Bounds x="850" y="305" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="838" y="292" width="74" height="27" />
+          <dc:Bounds x="841" y="362" width="68" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- 7A. Fire Department Subprocess -->
       <bpmndi:BPMNShape id="Shape_SubProcess_FireReview" bpmnElement="SubProcess_FireReview" isExpanded="false">
-        <dc:Bounds x="970" y="60" width="140" height="70" />
+        <dc:Bounds x="970" y="130" width="140" height="70" />
       </bpmndi:BPMNShape>
-
-      <!-- Timer Boundary Event on Fire Review (Attached to bottom of Fire Subprocess) -->
-      <bpmndi:BPMNShape id="Shape_Timer_FireEscalation" bpmnElement="Timer_FireEscalation">
-        <dc:Bounds x="1072" y="112" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1056" y="152" width="70" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-
-      <!-- Escalation Task & End -->
       <bpmndi:BPMNShape id="Shape_Task_NotifyEscalation" bpmnElement="Task_NotifyEscalation">
-        <dc:Bounds x="1160" y="105" width="120" height="50" />
+        <dc:Bounds x="1160" y="175" width="120" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_End_EscalationLogged" bpmnElement="End_EscalationLogged">
-        <dc:Bounds x="1312" y="112" width="36" height="36" />
+        <dc:Bounds x="1312" y="182" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1302" y="152" width="56" height="27" />
+          <dc:Bounds x="1305" y="222" width="51" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- 7B. Water Department -->
       <bpmndi:BPMNShape id="Shape_Task_WaterReview" bpmnElement="Task_WaterReview">
-        <dc:Bounds x="970" y="180" width="140" height="60" />
+        <dc:Bounds x="970" y="250" width="140" height="60" />
       </bpmndi:BPMNShape>
-
-      <!-- 7C. Zoning Department -->
       <bpmndi:BPMNShape id="Shape_Task_ZoningReview" bpmnElement="Task_ZoningReview">
-        <dc:Bounds x="970" y="270" width="140" height="60" />
+        <dc:Bounds x="970" y="340" width="140" height="60" />
       </bpmndi:BPMNShape>
-
-      <!-- 7D. Environmental Department -->
       <bpmndi:BPMNShape id="Shape_Task_EnvReview" bpmnElement="Task_EnvReview">
-        <dc:Bounds x="970" y="360" width="140" height="60" />
+        <dc:Bounds x="970" y="430" width="140" height="60" />
       </bpmndi:BPMNShape>
-
-      <!-- 8. Parallel Join Gateway -->
       <bpmndi:BPMNShape id="Shape_Gateway_ParallelJoin" bpmnElement="Gateway_ParallelReviewsJoin">
-        <dc:Bounds x="1180" y="235" width="50" height="50" />
+        <dc:Bounds x="1180" y="305" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1173" y="292" width="65" height="14" />
+          <dc:Bounds x="1173" y="362" width="65" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- 9. Evaluate Decisions Task -->
       <bpmndi:BPMNShape id="Shape_Task_EvaluateReviews" bpmnElement="Task_EvaluateReviews">
-        <dc:Bounds x="1265" y="220" width="120" height="80" />
+        <dc:Bounds x="1265" y="290" width="120" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-
-      <!-- 10. Gateway: Overall Decision? -->
       <bpmndi:BPMNShape id="Shape_Gateway_OverallDecision" bpmnElement="Gateway_OverallDecision" isMarkerVisible="true">
-        <dc:Bounds x="1425" y="235" width="50" height="50" />
+        <dc:Bounds x="1425" y="305" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1406" y="292" width="88" height="14" />
+          <dc:Bounds x="1407" y="362" width="87" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Rejection End Event -->
       <bpmndi:BPMNShape id="Shape_EndEvent_DeptRejected" bpmnElement="EndEvent_DeptRejected">
-        <dc:Bounds x="1432" y="380" width="36" height="36" />
+        <dc:Bounds x="1432" y="450" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1422" y="423" width="56" height="27" />
+          <dc:Bounds x="1423" y="493" width="54" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- Revision Task -->
       <bpmndi:BPMNShape id="Shape_Task_ApplicantRevision" bpmnElement="Task_ApplicantRevision">
-        <dc:Bounds x="990" y="5" width="130" height="40" />
+        <dc:Bounds x="990" y="75" width="130" height="40" />
       </bpmndi:BPMNShape>
-
-      <!-- 11. Call Activity: Fee Calculation -->
       <bpmndi:BPMNShape id="Shape_CallActivity_FeeCalculation" bpmnElement="CallActivity_FeeCalculation">
-        <dc:Bounds x="1545" y="220" width="120" height="80" />
+        <dc:Bounds x="1545" y="290" width="120" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- 12. Payment User Task -->
       <bpmndi:BPMNShape id="Shape_Task_CitizenPayment" bpmnElement="Task_CitizenPayment">
-        <dc:Bounds x="1705" y="220" width="120" height="80" />
+        <dc:Bounds x="1705" y="290" width="120" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- 13. Gateway: Payment Success? -->
       <bpmndi:BPMNShape id="Shape_Gateway_PaymentStatus" bpmnElement="Gateway_PaymentStatus" isMarkerVisible="true">
-        <dc:Bounds x="1865" y="235" width="50" height="50" />
+        <dc:Bounds x="1865" y="305" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1846" y="292" width="88" height="27" />
+          <dc:Bounds x="1866" y="362" width="48" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- 14. Generate Permit Service Task -->
       <bpmndi:BPMNShape id="Shape_Task_GeneratePermit" bpmnElement="Task_GeneratePermit">
-        <dc:Bounds x="1965" y="220" width="120" height="80" />
+        <dc:Bounds x="1965" y="290" width="120" height="80" />
       </bpmndi:BPMNShape>
-
-      <!-- 15. Final End Event -->
       <bpmndi:BPMNShape id="Shape_EndEvent_PermitIssued" bpmnElement="EndEvent_PermitIssued">
-        <dc:Bounds x="2135" y="242" width="36" height="36" />
+        <dc:Bounds x="2135" y="312" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2119" y="285" width="68" height="27" />
+          <dc:Bounds x="2119" y="355" width="68" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-
-      <!-- ================= SEQUENCE FLOW EDGES WITH NEATLY POSITIONED LABELS ================= -->
-
-      <!-- Start -> DocVerification -->
+      <bpmndi:BPMNShape id="Shape_Timer_FireEscalation" bpmnElement="Timer_FireEscalation">
+        <dc:Bounds x="1072" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1052" y="222" width="79" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Edge_Flow_To_DocVerification" bpmnElement="Flow_To_DocVerification">
-        <di:waypoint x="186" y="260" />
-        <di:waypoint x="240" y="260" />
+        <di:waypoint x="186" y="330" />
+        <di:waypoint x="240" y="330" />
       </bpmndi:BPMNEdge>
-
-      <!-- DocVerification -> Gateway -->
       <bpmndi:BPMNEdge id="Edge_Flow_To_Gateway_DocValid" bpmnElement="Flow_To_Gateway_DocValid">
-        <di:waypoint x="360" y="260" />
-        <di:waypoint x="420" y="260" />
+        <di:waypoint x="360" y="330" />
+        <di:waypoint x="420" y="330" />
       </bpmndi:BPMNEdge>
-
-      <!-- Gateway -> LandRegistry (Valid) -->
       <bpmndi:BPMNEdge id="Edge_Flow_DocValid_Yes" bpmnElement="Flow_DocValid_Yes">
-        <di:waypoint x="470" y="260" />
-        <di:waypoint x="540" y="260" />
+        <di:waypoint x="470" y="330" />
+        <di:waypoint x="540" y="330" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="488" y="238" width="28" height="14" />
+          <dc:Bounds x="490" y="308" width="24" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <!-- Gateway -> MissingDocs (Missing) -->
       <bpmndi:BPMNEdge id="Edge_Flow_DocValid_No" bpmnElement="Flow_DocValid_No">
-        <di:waypoint x="445" y="235" />
-        <di:waypoint x="445" y="140" />
+        <di:waypoint x="445" y="305" />
+        <di:waypoint x="445" y="210" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="455" y="175" width="88" height="14" />
+          <dc:Bounds x="460" y="245" width="79" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <!-- MissingDocs -> DocVerification -->
       <bpmndi:BPMNEdge id="Edge_Flow_From_DocCorrection" bpmnElement="Flow_From_DocCorrection">
-        <di:waypoint x="385" y="100" />
-        <di:waypoint x="300" y="100" />
-        <di:waypoint x="300" y="220" />
+        <di:waypoint x="385" y="170" />
+        <di:waypoint x="300" y="170" />
+        <di:waypoint x="300" y="290" />
       </bpmndi:BPMNEdge>
-
-      <!-- LandRegistry -> Gateway -->
       <bpmndi:BPMNEdge id="Edge_Flow_To_Gateway_LandValid" bpmnElement="Flow_To_Gateway_LandValid">
-        <di:waypoint x="670" y="260" />
-        <di:waypoint x="730" y="260" />
+        <di:waypoint x="670" y="330" />
+        <di:waypoint x="730" y="330" />
       </bpmndi:BPMNEdge>
-
-      <!-- Land Gateway -> ParallelSplit (Valid) -->
       <bpmndi:BPMNEdge id="Edge_Flow_LandValid_Yes" bpmnElement="Flow_LandValid_Yes">
-        <di:waypoint x="780" y="260" />
-        <di:waypoint x="850" y="260" />
+        <di:waypoint x="780" y="330" />
+        <di:waypoint x="850" y="330" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="788" y="238" width="54" height="14" />
+          <dc:Bounds x="791" y="308" width="48" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <!-- Land Gateway -> Rejected (Disputed) -->
       <bpmndi:BPMNEdge id="Edge_Flow_LandValid_No" bpmnElement="Flow_LandValid_No">
-        <di:waypoint x="755" y="285" />
-        <di:waypoint x="755" y="380" />
+        <di:waypoint x="755" y="355" />
+        <di:waypoint x="755" y="450" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="765" y="325" width="48" height="14" />
+          <dc:Bounds x="767" y="395" width="44" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <!-- ParallelSplit -> Fire Safety -->
       <bpmndi:BPMNEdge id="Edge_Flow_To_FireReview" bpmnElement="Flow_To_FireReview">
-        <di:waypoint x="875" y="235" />
-        <di:waypoint x="875" y="95" />
-        <di:waypoint x="970" y="95" />
+        <di:waypoint x="875" y="305" />
+        <di:waypoint x="875" y="165" />
+        <di:waypoint x="970" y="165" />
       </bpmndi:BPMNEdge>
-
-      <!-- ParallelSplit -> Water -->
       <bpmndi:BPMNEdge id="Edge_Flow_To_WaterReview" bpmnElement="Flow_To_WaterReview">
-        <di:waypoint x="890" y="240" />
-        <di:waypoint x="920" y="240" />
-        <di:waypoint x="920" y="210" />
-        <di:waypoint x="970" y="210" />
+        <di:waypoint x="890" y="310" />
+        <di:waypoint x="920" y="310" />
+        <di:waypoint x="920" y="280" />
+        <di:waypoint x="970" y="280" />
       </bpmndi:BPMNEdge>
-
-      <!-- ParallelSplit -> Zoning -->
       <bpmndi:BPMNEdge id="Edge_Flow_To_ZoningReview" bpmnElement="Flow_To_ZoningReview">
-        <di:waypoint x="900" y="260" />
-        <di:waypoint x="930" y="260" />
-        <di:waypoint x="930" y="300" />
-        <di:waypoint x="970" y="300" />
+        <di:waypoint x="900" y="330" />
+        <di:waypoint x="930" y="330" />
+        <di:waypoint x="930" y="370" />
+        <di:waypoint x="970" y="370" />
       </bpmndi:BPMNEdge>
-
-      <!-- ParallelSplit -> Environmental -->
       <bpmndi:BPMNEdge id="Edge_Flow_To_EnvReview" bpmnElement="Flow_To_EnvReview">
-        <di:waypoint x="875" y="285" />
-        <di:waypoint x="875" y="390" />
-        <di:waypoint x="970" y="390" />
+        <di:waypoint x="875" y="355" />
+        <di:waypoint x="875" y="460" />
+        <di:waypoint x="970" y="460" />
       </bpmndi:BPMNEdge>
-
-      <!-- Timer Boundary -> Escalation -->
       <bpmndi:BPMNEdge id="Edge_Flow_FireEscalation" bpmnElement="Flow_FireEscalation">
-        <di:waypoint x="1108" y="130" />
-        <di:waypoint x="1160" y="130" />
+        <di:waypoint x="1108" y="200" />
+        <di:waypoint x="1160" y="200" />
       </bpmndi:BPMNEdge>
-
-      <!-- Escalation -> End -->
       <bpmndi:BPMNEdge id="Edge_Flow_End_Escalation" bpmnElement="Flow_End_Escalation">
-        <di:waypoint x="1280" y="130" />
-        <di:waypoint x="1312" y="130" />
+        <di:waypoint x="1280" y="200" />
+        <di:waypoint x="1312" y="200" />
       </bpmndi:BPMNEdge>
-
-      <!-- Fire -> ParallelJoin -->
       <bpmndi:BPMNEdge id="Edge_Flow_From_FireSubprocess" bpmnElement="Flow_From_FireSubprocess">
-        <di:waypoint x="1110" y="95" />
-        <di:waypoint x="1205" y="95" />
-        <di:waypoint x="1205" y="235" />
+        <di:waypoint x="1110" y="165" />
+        <di:waypoint x="1205" y="165" />
+        <di:waypoint x="1205" y="305" />
       </bpmndi:BPMNEdge>
-
-      <!-- Water -> ParallelJoin -->
       <bpmndi:BPMNEdge id="Edge_Flow_From_WaterReview" bpmnElement="Flow_From_WaterReview">
-        <di:waypoint x="1110" y="210" />
-        <di:waypoint x="1150" y="210" />
-        <di:waypoint x="1150" y="250" />
-        <di:waypoint x="1180" y="250" />
+        <di:waypoint x="1110" y="280" />
+        <di:waypoint x="1150" y="280" />
+        <di:waypoint x="1150" y="320" />
+        <di:waypoint x="1180" y="320" />
       </bpmndi:BPMNEdge>
-
-      <!-- Zoning -> ParallelJoin -->
       <bpmndi:BPMNEdge id="Edge_Flow_From_ZoningReview" bpmnElement="Flow_From_ZoningReview">
-        <di:waypoint x="1110" y="300" />
-        <di:waypoint x="1150" y="300" />
-        <di:waypoint x="1150" y="270" />
-        <di:waypoint x="1180" y="270" />
+        <di:waypoint x="1110" y="370" />
+        <di:waypoint x="1150" y="370" />
+        <di:waypoint x="1150" y="340" />
+        <di:waypoint x="1180" y="340" />
       </bpmndi:BPMNEdge>
-
-      <!-- Environmental -> ParallelJoin -->
       <bpmndi:BPMNEdge id="Edge_Flow_From_EnvReview" bpmnElement="Flow_From_EnvReview">
-        <di:waypoint x="1110" y="390" />
-        <di:waypoint x="1205" y="390" />
-        <di:waypoint x="1205" y="285" />
+        <di:waypoint x="1110" y="460" />
+        <di:waypoint x="1205" y="460" />
+        <di:waypoint x="1205" y="355" />
       </bpmndi:BPMNEdge>
-
-      <!-- ParallelJoin -> EvaluateDecisions -->
       <bpmndi:BPMNEdge id="Edge_Flow_To_EvaluateDecision" bpmnElement="Flow_To_EvaluateDecision">
-        <di:waypoint x="1230" y="260" />
-        <di:waypoint x="1265" y="260" />
+        <di:waypoint x="1230" y="330" />
+        <di:waypoint x="1265" y="330" />
       </bpmndi:BPMNEdge>
-
-      <!-- EvaluateDecisions -> Gateway -->
       <bpmndi:BPMNEdge id="Edge_Flow_To_Gateway_OverallDecision" bpmnElement="Flow_To_Gateway_OverallDecision">
-        <di:waypoint x="1385" y="260" />
-        <di:waypoint x="1425" y="260" />
+        <di:waypoint x="1385" y="330" />
+        <di:waypoint x="1425" y="330" />
       </bpmndi:BPMNEdge>
-
-      <!-- Gateway -> CallActivity (Approved) -->
       <bpmndi:BPMNEdge id="Edge_Flow_Decision_Approved" bpmnElement="Flow_Decision_Approved">
-        <di:waypoint x="1475" y="260" />
-        <di:waypoint x="1545" y="260" />
+        <di:waypoint x="1475" y="330" />
+        <di:waypoint x="1545" y="330" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1477" y="238" width="68" height="14" />
+          <dc:Bounds x="1480" y="308" width="63" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <!-- Gateway -> Revision Task -->
       <bpmndi:BPMNEdge id="Edge_Flow_Decision_Revision" bpmnElement="Flow_Decision_Revision">
-        <di:waypoint x="1450" y="235" />
-        <di:waypoint x="1450" y="25" />
-        <di:waypoint x="1120" y="25" />
+        <di:waypoint x="1450" y="305" />
+        <di:waypoint x="1450" y="95" />
+        <di:waypoint x="1120" y="95" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1458" y="70" width="48" height="14" />
+          <dc:Bounds x="1461" y="140" width="43" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <!-- Revision Task -> ParallelSplit Loopback -->
-      <bpmndi:BPMNEdge id="Edge_Flow_RevisionSubmitted" bpmnElement="Flow_RevisionSubmitted">
-        <di:waypoint x="990" y="25" />
-        <di:waypoint x="850" y="25" />
-        <di:waypoint x="850" y="240" />
-      </bpmndi:BPMNEdge>
-
-      <!-- Gateway -> Rejection End Event -->
       <bpmndi:BPMNEdge id="Edge_Flow_Decision_Rejected" bpmnElement="Flow_Decision_Rejected">
-        <di:waypoint x="1450" y="285" />
-        <di:waypoint x="1450" y="380" />
+        <di:waypoint x="1450" y="355" />
+        <di:waypoint x="1450" y="450" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1458" y="325" width="48" height="14" />
+          <dc:Bounds x="1460" y="395" width="44" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <!-- CallActivity -> Payment -->
+      <bpmndi:BPMNEdge id="Edge_Flow_RevisionSubmitted" bpmnElement="Flow_RevisionSubmitted">
+        <di:waypoint x="990" y="95" />
+        <di:waypoint x="850" y="95" />
+        <di:waypoint x="850" y="310" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_Flow_To_PaymentTask" bpmnElement="Flow_To_PaymentTask">
-        <di:waypoint x="1665" y="260" />
-        <di:waypoint x="1705" y="260" />
+        <di:waypoint x="1665" y="330" />
+        <di:waypoint x="1705" y="330" />
       </bpmndi:BPMNEdge>
-
-      <!-- Payment -> Gateway -->
       <bpmndi:BPMNEdge id="Edge_Flow_To_Gateway_Payment" bpmnElement="Flow_To_Gateway_Payment">
-        <di:waypoint x="1825" y="260" />
-        <di:waypoint x="1865" y="260" />
+        <di:waypoint x="1825" y="330" />
+        <di:waypoint x="1865" y="330" />
       </bpmndi:BPMNEdge>
-
-      <!-- Payment Gateway -> Permit (Success) -->
       <bpmndi:BPMNEdge id="Edge_Flow_Payment_Success" bpmnElement="Flow_Payment_Success">
-        <di:waypoint x="1915" y="260" />
-        <di:waypoint x="1965" y="260" />
+        <di:waypoint x="1915" y="330" />
+        <di:waypoint x="1965" y="330" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1925" y="238" width="26" height="14" />
+          <dc:Bounds x="1927" y="308" width="23" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <!-- Payment Gateway -> Retry Loop (Failed) -->
       <bpmndi:BPMNEdge id="Edge_Flow_Payment_Failed" bpmnElement="Flow_Payment_Failed">
-        <di:waypoint x="1890" y="235" />
-        <di:waypoint x="1890" y="160" />
-        <di:waypoint x="1765" y="160" />
-        <di:waypoint x="1765" y="220" />
+        <di:waypoint x="1890" y="305" />
+        <di:waypoint x="1890" y="230" />
+        <di:waypoint x="1765" y="230" />
+        <di:waypoint x="1765" y="290" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1815" y="140" width="32" height="14" />
+          <dc:Bounds x="1816" y="210" width="30" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-
-      <!-- Generate Permit -> Final End -->
       <bpmndi:BPMNEdge id="Edge_Flow_To_EndSuccess" bpmnElement="Flow_To_EndSuccess">
-        <di:waypoint x="2085" y="260" />
-        <di:waypoint x="2135" y="260" />
+        <di:waypoint x="2085" y="330" />
+        <di:waypoint x="2135" y="330" />
       </bpmndi:BPMNEdge>
-
     </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram>
+    <bpmndi:BPMNPlane bpmnElement="SubProcess_FireReview" />
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
