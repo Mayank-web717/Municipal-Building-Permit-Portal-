@@ -40,11 +40,16 @@ public class ReviewService {
 
     @Transactional
     public DepartmentReview processReviewDecision(Long applicationId, ReviewActionRequest request, DepartmentReview.ReviewStatus decision) {
-        User officer = userRepository.findById(request.getOfficerId())
-                .orElseGet(() -> userRepository.findAll().stream()
-                        .filter(u -> u.getRole() == User.UserRole.ADMIN || u.getRole() == User.UserRole.OFFICER)
-                        .findFirst()
-                        .orElse(null));
+        User officer = userRepository.findById(request.getOfficerId()).orElse(null);
+        if (officer != null && officer.getRole() == User.UserRole.APPLICANT) {
+            throw new IllegalArgumentException("Applicants / Citizens do not have statutory authority to approve or review applications.");
+        }
+        if (officer == null) {
+            officer = userRepository.findAll().stream()
+                    .filter(u -> u.getRole() == User.UserRole.ADMIN || u.getRole() == User.UserRole.OFFICER)
+                    .findFirst()
+                    .orElse(null);
+        }
 
         Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new RuntimeException("Application not found: " + applicationId));

@@ -15,11 +15,17 @@ import {
 } from 'lucide-react';
 import WorkflowTracker from '../components/WorkflowTracker';
 import DepartmentApprovalGrid from '../components/DepartmentApprovalGrid';
+import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import confetti from 'canvas-confetti';
 
 export default function ApplicationDetails() {
   const { id } = useParams();
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
+  const isOfficer = user?.role === 'OFFICER';
+  const isStaff = isAdmin || isOfficer;
+
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
@@ -47,9 +53,9 @@ export default function ApplicationDetails() {
     try {
       await api.post(`/reviews/${id}/${action}`, {
         department,
-        officerId: 1,
+        officerId: user?.id || 1,
         comments: action === 'approve' 
-          ? 'Statutory compliance verified and approved by Municipal Administrator.' 
+          ? `Statutory compliance verified and approved by ${user?.fullName || 'Municipal Administrator'}.` 
           : action === 'revision'
           ? 'Revisions required on architectural blueprint.'
           : 'Statutory clearance rejected due to non-compliance.'
@@ -66,7 +72,7 @@ export default function ApplicationDetails() {
     setApproving(true);
     setMessage('');
     try {
-      await api.post(`/reviews/${id}/batch-approve`);
+      await api.post(`/reviews/${id}/batch-approve?officerId=${user?.id || 1}`);
       setMessage('One-Click Clearance granted! All 4 departments cleared in parallel. Moving to Fee Calculation...');
       confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
       loadDetails();
@@ -271,11 +277,13 @@ export default function ApplicationDetails() {
               </span>
             </h3>
             <p className="text-xs text-slate-500">
-              Admin clearance desk: approve departments directly below without using external tasklists.
+              {isStaff 
+                ? 'Admin clearance desk: approve departments directly below without using external tasklists.'
+                : 'Current status of statutory clearances across municipal departments.'}
             </p>
           </div>
 
-          {hasPendingReviews && (
+          {isAdmin && hasPendingReviews && (
             <button
               onClick={handleBatchApprove}
               disabled={approving}
@@ -289,8 +297,9 @@ export default function ApplicationDetails() {
 
         <DepartmentApprovalGrid 
           reviews={reviews} 
-          onReviewAction={handleReviewAction}
-          isActionable={true}
+          onReviewAction={isStaff ? handleReviewAction : null}
+          isActionable={isStaff}
+          allowedDepartment={isAdmin ? 'ALL' : user?.department}
         />
       </div>
 

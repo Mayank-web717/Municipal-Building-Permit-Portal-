@@ -8,7 +8,7 @@ const DEPARTMENTS = [
   { key: 'ENVIRONMENTAL', label: 'Environmental Board', icon: Trees, color: 'text-emerald-500', bg: 'bg-emerald-50' }
 ];
 
-export default function DepartmentApprovalGrid({ reviews = [], onReviewAction, isActionable = true }) {
+export default function DepartmentApprovalGrid({ reviews = [], onReviewAction, isActionable = true, allowedDepartment = null }) {
   const [loadingDept, setLoadingDept] = useState(null);
 
   const getReviewForDept = (deptKey) => {
@@ -98,10 +98,12 @@ export default function DepartmentApprovalGrid({ reviews = [], onReviewAction, i
               )}
             </div>
 
-            {/* Direct Frontend Admin Action Buttons */}
-            {isActionable && isPending && onReviewAction && (
+            {/* Direct Frontend Clearance Action Buttons */}
+            {isActionable && isPending && onReviewAction && (!allowedDepartment || allowedDepartment === 'ALL' || allowedDepartment === dept.key) && (
               <div className="mt-4 pt-3 border-t border-slate-100 space-y-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Admin Direct Action</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                  {allowedDepartment && allowedDepartment !== 'ALL' ? 'Department Action' : 'Admin Clearance Action'}
+                </span>
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => handleAction(dept.key, 'approve')}
