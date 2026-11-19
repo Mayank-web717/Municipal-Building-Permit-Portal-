@@ -103,7 +103,9 @@ public class PermitPdfGeneratorService {
                 writeLine(cs, 45, y, "Proposed Area: " + app.getProposedBuildingArea() + " sq.m");
                 writeLine(cs, 320, y, "Floors: " + app.getNumberOfFloors());
                 y -= 18;
-                writeLine(cs, 45, y, "Address: " + app.getPropertyAddress() + ", " + app.getCity() + " - " + app.getPinCode());
+                String addr = sanitizeText(app.getPropertyAddress() + ", " + app.getCity() + " - " + app.getPinCode());
+                if (addr.length() > 65) addr = addr.substring(0, 62) + "...";
+                writeLine(cs, 45, y, "Address: " + addr);
 
                 // Department Approvals Table
                 y -= 30;
@@ -145,7 +147,7 @@ public class PermitPdfGeneratorService {
 
             document.save(targetPath.toFile());
             log.info("Successfully generated permit PDF at: {}", targetPath.toAbsolutePath());
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Failed to generate permit PDF", e);
         }
 
@@ -170,8 +172,17 @@ public class PermitPdfGeneratorService {
     private void writeLine(PDPageContentStream cs, float x, float y, String text) throws IOException {
         cs.beginText();
         cs.newLineAtOffset(x, y);
-        cs.showText(text != null ? text : "");
+        cs.showText(sanitizeText(text));
         cs.endText();
+    }
+
+    private String sanitizeText(String input) {
+        if (input == null) return "";
+        // Replace newlines and carriage returns with spaces
+        String clean = input.replace('\r', ' ').replace('\n', ' ');
+        // Strip out non-printable or unsupported WinAnsi characters
+        clean = clean.replaceAll("[^\\x20-\\x7E]", " ");
+        return clean.trim();
     }
 }
 
