@@ -261,21 +261,24 @@ export default function ApplicationDetails() {
           </div>
 
           {!isStaff ? (
-            <div className="pt-2 border-t border-indigo-100 flex items-center justify-end gap-3">
+            <div className="pt-2 border-t border-indigo-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3">
               <button
+                type="button"
                 onClick={() => handleMockPayment(true)}
                 disabled={paying}
-                className="px-3.5 py-2 border border-rose-300 bg-white text-rose-700 hover:bg-rose-50 font-semibold text-xs rounded-lg transition"
+                className="px-3.5 py-2 border border-dashed border-rose-300 bg-rose-50/50 hover:bg-rose-100/60 text-rose-700 font-semibold text-xs rounded-lg transition"
+                title="Simulates a bank gateway transaction decline to demonstrate Camunda BPMN Scenario E (Payment Retry Loop)"
               >
-                Simulate Failed Payment
+                Simulate Gateway Decline (Demo Scenario E)
               </button>
               <button
+                type="button"
                 onClick={() => handleMockPayment(false)}
                 disabled={paying}
-                className="inline-flex items-center gap-2 px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow transition disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow-md transition disabled:opacity-50"
               >
                 <CreditCard className="w-4 h-4" />
-                {paying ? 'Processing...' : 'Pay Permit Fee Now'}
+                {paying ? 'Processing Payment...' : 'Pay Permit Fee Now'}
               </button>
             </div>
           ) : (
