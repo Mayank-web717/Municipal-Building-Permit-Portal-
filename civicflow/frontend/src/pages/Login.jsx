@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, Shield, UserCheck, KeyRound, ArrowRight } from 'lucide-react';
+import { 
+  Building2, 
+  Shield, 
+  UserCheck, 
+  KeyRound, 
+  ArrowRight,
+  Flame,
+  Droplets,
+  Compass,
+  Trees,
+  ShieldCheck
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
@@ -106,7 +117,7 @@ export default function Login() {
         {/* Demo Credentials Switcher */}
         <div className="p-6 bg-slate-50 border-t border-slate-200">
           <p className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-3">
-            Quick Demonstration Profiles:
+            Quick Demonstration Profiles (All 4 Departments & Roles):
           </p>
           <div className="grid grid-cols-2 gap-2 text-xs">
             <button
@@ -114,32 +125,71 @@ export default function Login() {
               onClick={() => setPresetUser('ar_vikram', 'password123')}
               className="p-2.5 text-left border rounded-lg bg-white hover:bg-slate-100 transition border-slate-200"
             >
-              <div className="font-semibold text-slate-800">Ar. Vikram (Applicant)</div>
-              <div className="text-[10px] text-slate-500">Architect role</div>
+              <div className="flex items-center gap-1.5 font-semibold text-slate-800">
+                <Building2 className="w-3.5 h-3.5 text-teal-600" />
+                Ar. Vikram (Applicant)
+              </div>
+              <div className="text-[10px] text-slate-500 mt-0.5">Architect Role</div>
             </button>
-            <button
-              type="button"
-              onClick={() => setPresetUser('fire_officer', 'password123')}
-              className="p-2.5 text-left border rounded-lg bg-white hover:bg-slate-100 transition border-slate-200"
-            >
-              <div className="font-semibold text-slate-800">Fire Officer (Dept)</div>
-              <div className="text-[10px] text-slate-500">Fire Safety officer</div>
-            </button>
-            <button
-              type="button"
-              onClick={() => setPresetUser('water_officer', 'password123')}
-              className="p-2.5 text-left border rounded-lg bg-white hover:bg-slate-100 transition border-slate-200"
-            >
-              <div className="font-semibold text-slate-800">Water Officer (Dept)</div>
-              <div className="text-[10px] text-slate-500">Water supply officer</div>
-            </button>
+
             <button
               type="button"
               onClick={() => setPresetUser('admin', 'admin123')}
               className="p-2.5 text-left border rounded-lg bg-white hover:bg-slate-100 transition border-slate-200"
             >
-              <div className="font-semibold text-slate-800">Admin Sharma</div>
-              <div className="text-[10px] text-slate-500">Municipal Administrator</div>
+              <div className="flex items-center gap-1.5 font-semibold text-slate-800">
+                <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
+                Admin Sharma
+              </div>
+              <div className="text-[10px] text-slate-500 mt-0.5">Municipal Administrator</div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setPresetUser('fire_officer', 'password123')}
+              className="p-2.5 text-left border rounded-lg bg-white hover:bg-slate-100 transition border-slate-200"
+            >
+              <div className="flex items-center gap-1.5 font-semibold text-slate-800">
+                <Flame className="w-3.5 h-3.5 text-orange-500" />
+                Fire Officer
+              </div>
+              <div className="text-[10px] text-slate-500 mt-0.5">Fire Safety Dept</div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setPresetUser('water_officer', 'password123')}
+              className="p-2.5 text-left border rounded-lg bg-white hover:bg-slate-100 transition border-slate-200"
+            >
+              <div className="flex items-center gap-1.5 font-semibold text-slate-800">
+                <Droplets className="w-3.5 h-3.5 text-cyan-500" />
+                Water Officer
+              </div>
+              <div className="text-[10px] text-slate-500 mt-0.5">Water Works Dept</div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setPresetUser('zoning_officer', 'password123')}
+              className="p-2.5 text-left border rounded-lg bg-white hover:bg-slate-100 transition border-slate-200"
+            >
+              <div className="flex items-center gap-1.5 font-semibold text-slate-800">
+                <Compass className="w-3.5 h-3.5 text-amber-500" />
+                Zoning Officer
+              </div>
+              <div className="text-[10px] text-slate-500 mt-0.5">Zoning & Master Plan</div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setPresetUser('env_officer', 'password123')}
+              className="p-2.5 text-left border rounded-lg bg-white hover:bg-slate-100 transition border-slate-200"
+            >
+              <div className="flex items-center gap-1.5 font-semibold text-slate-800">
+                <Trees className="w-3.5 h-3.5 text-emerald-500" />
+                Environmental Officer
+              </div>
+              <div className="text-[10px] text-slate-500 mt-0.5">Pollution / Env Board</div>
             </button>
           </div>
         </div>

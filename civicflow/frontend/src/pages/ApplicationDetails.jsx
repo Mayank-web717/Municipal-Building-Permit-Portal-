@@ -207,21 +207,35 @@ export default function ApplicationDetails() {
             <div>
               <h4 className="font-bold text-sm text-amber-900">Departmental Revision Requested</h4>
               <p className="text-xs text-amber-800 mt-1">
-                One or more municipal departments requested corrections on your architectural submission.
-                Upload your updated blueprints below to loop the application back into review.
+                One or more municipal departments requested corrections on the architectural submission.
+                {!isStaff 
+                  ? ' Upload your updated blueprints below to loop the application back into review.'
+                  : ' The applicant has been notified to upload a revised architectural blueprint.'}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3 pt-2">
-            <button
-              onClick={handleUploadRevision}
-              disabled={uploadingRevision}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-lg shadow transition disabled:opacity-50"
-            >
-              <Upload className="w-4 h-4" />
-              {uploadingRevision ? 'Uploading...' : 'Upload Corrected Blueprint'}
-            </button>
-          </div>
+          {!isStaff ? (
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                onClick={handleUploadRevision}
+                disabled={uploadingRevision}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-lg shadow transition disabled:opacity-50"
+              >
+                <Upload className="w-4 h-4" />
+                {uploadingRevision ? 'Uploading...' : 'Upload Corrected Blueprint'}
+              </button>
+            </div>
+          ) : (
+            <div className="pt-2 border-t border-amber-200 text-xs text-amber-800 flex items-center justify-between">
+              <span className="flex items-center gap-1.5 font-medium">
+                <Clock className="w-4 h-4 text-amber-600" />
+                Awaiting Applicant Blueprint Revision: Citizen notified of revision remarks.
+              </span>
+              <span className="font-semibold px-2.5 py-1 bg-white border border-amber-200 rounded-lg text-amber-900 text-[11px]">
+                Staff View (Read-Only)
+              </span>
+            </div>
+          )}
         </div>
       )}
 
@@ -246,23 +260,35 @@ export default function ApplicationDetails() {
             </div>
           </div>
 
-          <div className="pt-2 border-t border-indigo-100 flex items-center justify-end gap-3">
-            <button
-              onClick={() => handleMockPayment(true)}
-              disabled={paying}
-              className="px-3.5 py-2 border border-rose-300 bg-white text-rose-700 hover:bg-rose-50 font-semibold text-xs rounded-lg transition"
-            >
-              Simulate Failed Payment
-            </button>
-            <button
-              onClick={() => handleMockPayment(false)}
-              disabled={paying}
-              className="inline-flex items-center gap-2 px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow transition disabled:opacity-50"
-            >
-              <CreditCard className="w-4 h-4" />
-              {paying ? 'Processing...' : 'Pay Permit Fee Now'}
-            </button>
-          </div>
+          {!isStaff ? (
+            <div className="pt-2 border-t border-indigo-100 flex items-center justify-end gap-3">
+              <button
+                onClick={() => handleMockPayment(true)}
+                disabled={paying}
+                className="px-3.5 py-2 border border-rose-300 bg-white text-rose-700 hover:bg-rose-50 font-semibold text-xs rounded-lg transition"
+              >
+                Simulate Failed Payment
+              </button>
+              <button
+                onClick={() => handleMockPayment(false)}
+                disabled={paying}
+                className="inline-flex items-center gap-2 px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow transition disabled:opacity-50"
+              >
+                <CreditCard className="w-4 h-4" />
+                {paying ? 'Processing...' : 'Pay Permit Fee Now'}
+              </button>
+            </div>
+          ) : (
+            <div className="pt-2 border-t border-indigo-100 flex items-center justify-between text-xs text-indigo-800">
+              <span className="flex items-center gap-1.5 font-medium">
+                <Clock className="w-4 h-4 text-indigo-500" />
+                Awaiting Applicant Payment: Notification has been dispatched to {app.applicant?.fullName || 'the citizen'}.
+              </span>
+              <span className="font-semibold px-2.5 py-1 bg-white border border-indigo-200 rounded-lg text-indigo-900 text-[11px]">
+                Staff View (Read-Only)
+              </span>
+            </div>
+          )}
         </div>
       )}
 
@@ -347,7 +373,7 @@ export default function ApplicationDetails() {
                   <div className="flex items-center gap-2">
                     <FileText className="w-4 h-4 text-teal-600" />
                     <div>
-                      <span className="font-semibold text-slate-800 block">{doc.originalFilename}</span>
+                      <span className="font-semibold text-slate-800 block">{doc.fileName || doc.originalFilename}</span>
                       <span className="text-[10px] text-slate-400">{doc.documentType}</span>
                     </div>
                   </div>

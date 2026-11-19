@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Building2, 
@@ -9,7 +9,9 @@ import {
   ChevronRight, 
   ChevronLeft, 
   AlertCircle,
-  FileCheck
+  FileCheck,
+  FileText,
+  X
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -42,6 +44,10 @@ export default function NewApplication() {
     proposedBuildingArea: 2500,
   });
 
+  // Optional uploaded drawing file
+  const [drawingFile, setDrawingFile] = useState(null);
+  const fileInputRef = useRef(null);
+
   // Mock file names for UI step 3
   const [documents, setDocuments] = useState({
     blueprint: 'Architectural_Master_Blueprint_v1.dwg.pdf',
@@ -50,6 +56,20 @@ export default function NewApplication() {
     structural: 'Licensed_Structural_Stability_Certificate.pdf',
     identityProof: 'Architect_Council_License_ID.pdf'
   });
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setDrawingFile(file);
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setDrawingFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -100,6 +120,20 @@ export default function NewApplication() {
 
       const res = await api.post('/applications', payload);
       const newApp = res.data;
+
+      // If applicant attached an optional drawing/blueprint file, upload it immediately
+      if (drawingFile) {
+        try {
+          const fileData = new FormData();
+          fileData.append('file', drawingFile);
+          fileData.append('documentType', 'BUILDING_BLUEPRINT');
+          await api.post(`/applications/${newApp.id}/upload`, fileData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          });
+        } catch (uploadErr) {
+          console.warn('Optional drawing upload skipped/failed:', uploadErr);
+        }
+      }
 
       // Automatically redirect to the detail view where Camunda workflow can be tracked
       navigate(`/applications/${newApp.id}`);
@@ -330,16 +364,82 @@ export default function NewApplication() {
 
         {/* STEP 3: Document Uploads */}
         {currentStep === 3 && (
-          <div className="space-y-4">
-            <h3 className="text-base font-bold text-slate-800 border-b pb-2">Step 3: Statutory Blueprints & Certificates</h3>
+          <div className="space-y-5">
+            <div>
+              <h3 className="text-base font-bold text-slate-800 border-b pb-2">Step 3: Statutory Blueprints & Certificates</h3>
+              <p className="text-xs text-slate-500 mt-1">
+                You can attach your custom architectural drawing / blueprint now, or let the portal attach the standard municipal file set.
+              </p>
+            </div>
+
+            {/* Optional Drawing Upload Box */}
+            <div className="p-4 rounded-xl border-2 border-dashed border-teal-300 bg-teal-50/40 hover:bg-teal-50/70 transition space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center text-teal-700 flex-shrink-0">
+                    <Upload className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-bold text-sm text-slate-800">Upload Architectural Drawing / Plan</h4>
+                      <span className="text-[10px] font-bold text-teal-700 bg-teal-100 px-2 py-0.5 rounded-full border border-teal-200 uppercase">
+                        Optional
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Supports PDF, DWG, DXF, PNG, JPG. You can upload your blueprint now or replace it anytime after submission.
+                    </p>
+                  </div>
+                </div>
+
+                <input 
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept=".pdf,.dwg,.dxf,.png,.jpg,.jpeg"
+                  className="hidden"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-3.5 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold shadow-sm transition flex-shrink-0 self-start sm:self-auto"
+                >
+                  {drawingFile ? 'Change File' : 'Browse Drawing'}
+                </button>
+              </div>
+
+              {drawingFile && (
+                <div className="p-2.5 rounded-lg bg-white border border-teal-200 flex items-center justify-between text-xs shadow-sm">
+                  <div className="flex items-center gap-2 font-mono text-teal-900 font-semibold truncate">
+                    <FileText className="w-4 h-4 text-teal-600 flex-shrink-0" />
+                    <span className="truncate">{drawingFile.name}</span>
+                    <span className="text-[10px] text-slate-400 font-normal">
+                      ({(drawingFile.size / 1024).toFixed(1)} KB)
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleRemoveFile}
+                    className="p-1 rounded hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition"
+                    title="Remove selected file"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </div>
 
             <div className="space-y-3">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Statutory Compliance File Manifest (Standard Set)
+              </h4>
               {[
-                { label: 'Building Architectural Blueprint (PDF/DWG)', file: documents.blueprint, req: true },
-                { label: 'Land Ownership / Sale Deed Certificate', file: documents.ownership, req: true },
-                { label: 'Topographical Site & Ingress Plan', file: documents.sitePlan, req: true },
-                { label: 'Structural Stability Certificate', file: documents.structural, req: true },
-                { label: 'Identity Proof / Council Registration', file: documents.identityProof, req: true },
+                { label: 'Building Architectural Blueprint (PDF/DWG)', file: drawingFile ? drawingFile.name : documents.blueprint, custom: !!drawingFile },
+                { label: 'Land Ownership / Sale Deed Certificate', file: documents.ownership },
+                { label: 'Topographical Site & Ingress Plan', file: documents.sitePlan },
+                { label: 'Structural Stability Certificate', file: documents.structural },
+                { label: 'Identity Proof / Council Registration', file: documents.identityProof },
               ].map((doc, idx) => (
                 <div key={idx} className="p-3.5 border rounded-lg bg-slate-50 flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -349,8 +449,10 @@ export default function NewApplication() {
                       <p className="text-[11px] text-slate-500 font-mono mt-0.5">{doc.file}</p>
                     </div>
                   </div>
-                  <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full">
-                    Ready
+                  <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${
+                    doc.custom ? 'text-teal-700 bg-teal-100 border border-teal-200' : 'text-emerald-700 bg-emerald-100'
+                  }`}>
+                    {doc.custom ? 'Custom Attached' : 'Ready'}
                   </span>
                 </div>
               ))}
@@ -388,6 +490,12 @@ export default function NewApplication() {
                 <div>
                   <span className="text-slate-500">Proposed Built Area:</span>{' '}
                   <span className="font-bold text-slate-800">{formData.proposedBuildingArea} sq.m ({formData.numberOfFloors} floors)</span>
+                </div>
+                <div className="col-span-2 pt-1 border-t border-slate-200">
+                  <span className="text-slate-500">Architectural Plan:</span>{' '}
+                  <span className="font-semibold text-teal-800">
+                    {drawingFile ? `Custom Drawing Attached (${drawingFile.name})` : 'Standard Statutory Schematic (Auto-provisioned)'}
+                  </span>
                 </div>
               </div>
             </div>
